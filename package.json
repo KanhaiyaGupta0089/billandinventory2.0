@@ -6,10 +6,7 @@
   "scripts": {
     "start": "node index.js"
   },
-  "engines": {
-    "node": "20.12.1"
-  },
-  "keywords": [],
+"keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
