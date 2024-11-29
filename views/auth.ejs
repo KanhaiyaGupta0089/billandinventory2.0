@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication Form</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center py-8">
+  <!-- Main Container -->
+  <div class="w-full max-w-2xl bg-gray-50 rounded-lg shadow-lg p-6 sm:p-10 relative overflow-hidden">
+    <!-- Decorative Elements -->
+    <div class="absolute top-0 left-0 w-20 h-20 bg-blue-100 rounded-full transform -translate-x-8 -translate-y-8"></div>
+    <div class="absolute bottom-0 right-0 w-32 h-32 bg-blue-200 rounded-full transform translate-x-8 translate-y-8"></div>
+
+    <!-- Logo Section -->
+    <div class="flex justify-center mb-6 relative z-10">
+      <img src="/images/logo2.jpeg" alt="Logo" class="w-20 h-20 object-contain">
+    </div>
+
+    <!-- Title Section -->
+    <div class="text-center mb-6 relative z-10">
+      <h1 class="text-2xl font-semibold text-gray-800">Welcome Back!</h1>
+      <p class="text-gray-600">Sign in to continue managing your inventory.</p>
+    </div>
+
+    <!-- Form Section -->
+    <form id="authForm" class="space-y-6 relative z-10">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+        <input type="email" id="email" name="email" required
+          class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <input type="password" id="password" name="password" required
+          class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+      </div>
+      <div class="flex items-center justify-between">
+        <label class="flex items-center text-sm text-gray-600">
+          <input type="checkbox" class="h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-blue-400">
+          <span class="ml-2">Remember me</span>
+        </label>
+        <a href="/forgot-password" class="text-sm text-blue-500 hover:underline">Forgot password?</a>
+      </div>
+      <button type="submit"
+        class="w-full py-2 px-4 bg-blue-500 text-white rounded-md font-medium hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+        Log In
+      </button>
+    </form>
+
+    <!-- Additional Links -->
+    <p class="text-sm text-center text-gray-600 mt-6 relative z-10">
+      Don't have an account? <a href="/signup" class="text-blue-500 hover:underline">Sign Up</a>
+    </p>
+  </div>
+
+  <!-- GSAP Animations -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Decorative element animations
+      gsap.from(".bg-blue-100", { x: -100, y: -100, opacity: 0, duration: 1, ease: "power2.out" });
+      gsap.from(".bg-blue-200", { x: 100, y: 100, opacity: 0, duration: 1, ease: "power2.out" });
+
+      // Logo animation
+      gsap.from("img", { scale: 0.8, opacity: 0, duration: 1, delay: 0.2, ease: "power2.out" });
+
+      // Title and form animation
+      gsap.from("h1, p, form > div, button", {
+        y: 20,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: "power2.out",
+        delay: 0.4
+      });
+    });
+  </script>
+</body>
+
+</html>

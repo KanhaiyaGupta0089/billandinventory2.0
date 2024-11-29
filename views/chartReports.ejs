@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Dashboard</title>
+  <link type="image/png" sizes="16x16" rel="icon" href="https://cdn-icons-png.freepik.com/256/12501/12501790.png?ga=GA1.1.1820960174.1718128542&semt=ais_hybrid">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <!-- Header -->
+  <header class="bg-gray-800 text-white py-4 px-6">
+    <h1 class="text-2xl font-bold">Sales Dashboard</h1>
+  </header>
+
+  <!-- Main Content -->
+  <main class="p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Weekly Sales -->
+      <div class="bg-white p-4 shadow-md rounded-lg transform transition-transform duration-300 hover:scale-105 shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Weekly Sales</h2>
+        <canvas id="weeklySalesChart"></canvas>
+      </div>
+  
+      <!-- Monthly Sales -->
+      <div class="bg-white p-4 shadow-md rounded-lg transform transition-transform duration-300 hover:scale-105 shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Monthly Sales</h2>
+        <canvas id="monthlySalesChart"></canvas>
+      </div>
+
+      <!-- Yearly Sales -->
+      <div class="bg-white p-4 shadow-md rounded-lg transform transition-transform duration-300  hover:scale-105 shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Yearly Sales</h2>
+        <canvas id="yearlySalesChart"></canvas>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Wait for the DOM to load
+    document.addEventListener("DOMContentLoaded", () => {
+      // Weekly Sales Chart
+      const weeklySalesCtx = document.getElementById('weeklySalesChart').getContext('2d');
+      new Chart(weeklySalesCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          datasets: [{
+            label: 'Sales ($)',
+            data: [120, 150, 180, 220, 170, 250, 300],
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      // Monthly Sales Chart
+      const monthlySalesCtx = document.getElementById('monthlySalesChart').getContext('2d');
+      new Chart(monthlySalesCtx, {
+        type: 'line',
+        data: {
+          labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+          datasets: [{
+            label: 'Sales ($)',
+            data: [3000, 3200, 2800, 4000, 4500, 5000, 4800, 5200, 4700, 5500, 6000, 5800],
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      // Yearly Sales Chart
+      const yearlySalesCtx = document.getElementById('yearlySalesChart').getContext('2d');
+      new Chart(yearlySalesCtx, {
+        type: 'pie',
+        data: {
+          labels: ['2020', '2021', '2022', '2023'],
+          datasets: [{
+            label: 'Sales ($)',
+            data: [50000, 60000, 70000, 75000],
+            backgroundColor: [
+              'rgba(75, 192, 192, 0.5)',
+              'rgba(153, 102, 255, 0.5)',
+              'rgba(255, 159, 64, 0.5)',
+              'rgba(255, 205, 86, 0.5)'
+            ],
+            borderColor: [
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)',
+              'rgba(255, 205, 86, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true
+        }
+      });
+    });
+  </script>
+</body>
+</html>

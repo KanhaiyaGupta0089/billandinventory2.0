@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Return Products</title>
+  <link type="image/png" sizes="16x16" rel="icon" href="https://cdn-icons-png.freepik.com/256/12501/12501790.png?ga=GA1.1.1820960174.1718128542&semt=ais_hybrid">
+  
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6 text-center">Return Products</h1>
+     
+    
+    <!-- Bill ID Field -->
+    <div class="mb-6">
+      <label for="billId" class="block text-lg font-semibold mb-2">Bill ID</label>
+      <input
+        type="text"
+        id="billId"
+        placeholder="Enter Bill ID"
+        class="w-full p-3 border border-gray-300 rounded-lg"
+      />
+    </div>
+
+    <!-- Form for Return Products -->
+    <form id="returnForm" class="space-y-4">
+      <table class="table-auto w-full border border-gray-300 text-left">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2 border border-gray-300">Product ID</th>
+            <th class="px-4 py-2 border border-gray-300">Product Name</th>
+            <th class="px-4 py-2 border border-gray-300">Quantity</th>
+            <th class="px-4 py-2 border border-gray-300">Action</th>
+          </tr>
+        </thead>
+        <tbody id="productTable">
+          <tr>
+            <td class="px-4 py-2 border border-gray-300">
+              <input
+                type="text"
+                name="productId"
+                placeholder="Enter Product ID"
+                class="w-full p-2 border border-gray-300 rounded"
+              />
+            </td>
+            <td class="px-4 py-2 border border-gray-300">
+              <input
+                type="text"
+                name="productName"
+                placeholder="Enter Product Name"
+                class="w-full p-2 border border-gray-300 rounded"
+              />
+            </td>
+            <td class="px-4 py-2 border border-gray-300">
+              <input
+                type="number"
+                name="productQuantity"
+                placeholder="Enter Quantity"
+                class="w-full p-2 border border-gray-300 rounded"
+              />
+            </td>
+            <td class="flex justify-center item-center gap-2 px-0 py-2 border border-gray-300">
+              <button
+                type="button"
+                onclick="addRow(this)"
+                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onclick="deleteRow(this)"
+                class="bg-red-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+<div class="w-full flex justify-center">  
+      <button
+        type="submit"
+        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded"
+      >
+        Submit Return
+      </button>
+    </div>
+    </form>
+  </div>
+
+  <script>
+    // Array to store return products
+    let returnProducts = [];
+
+    // Function to handle adding a row's data to the array
+    function addRow(button) {
+      const row = button.parentElement.parentElement; // Current row
+      const inputs = row.querySelectorAll('input'); // Input fields in the row
+      const productData = {}; // Object to store product details
+
+      // Populate the productData object
+      inputs.forEach(input => {
+        productData[input.name] = input.value.trim();
+      });
+      
+
+      // Validate inputs
+      if (!productData.productId || !productData.productName || !productData.productQuantity) {
+        alert('Please fill out all fields before saving.');
+        return;
+      }
+
+      // Add product to the returnProducts array
+      returnProducts.push(productData);
+
+      // Log the updated returnProducts array
+      console.log('Return Products:', returnProducts);
+
+      // Reset the row's inputs
+      
+
+      // Add a new row
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td class="px-4 py-2 border border-gray-300">
+          <input
+            type="text"
+            name="productId"
+            placeholder="Enter Product ID"
+            class="w-full p-2 border border-gray-300 rounded"
+          />
+        </td>
+        <td class="px-4 py-2 border border-gray-300">
+          <input
+            type="text"
+            name="productName"
+            placeholder="Enter Product Name"
+            class="w-full p-2 border border-gray-300 rounded"
+          />
+        </td>
+        <td class="px-4 py-2 border border-gray-300">
+          <input
+            type="number"
+            name="productQuantity"
+            placeholder="Enter Quantity"
+            class="w-full p-2 border border-gray-300 rounded"
+          />
+        </td>
+        <td class="flex justify-center item-center gap-2 px-0 py-2 border border-gray-300">
+          <button
+            type="button"
+            onclick="addRow(this)"
+            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+          >
+            Save
+          </button>
+          
+          <button
+            type="button"
+            onclick="addRow(this)"
+            class="bg-red-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+          >
+            Delete
+          </button>
+        </td>
+      `;
+      document.getElementById('productTable').appendChild(newRow);
+    }
+
+    // Form submission handler
+    document.getElementById('returnForm').addEventListener('submit', async function(event) {
+      event.preventDefault(); // Prevent form from refreshing the page
+
+      const billId = document.getElementById('billId').value.trim();
+      if (!billId) {
+        alert('Please enter a Bill ID.');
+        return;
+      }
+if (returnProducts.length === 0) {
+        alert('Please add at least one product before submitting.');
+        return;
+      }
+      let bilId=document.querySelector('#billId').value
+      
+let returnObj={
+  billId:bilId,
+  returnProducts
+}
+     const productReturn=await fetch("http://localhost:5500/product/return",{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify(returnObj)
+      })
+      let respReturn=await productReturn.json()
+      alert(respReturn.message)
+      
+
+      // Simulate sending data to the backend
+      console.log('Submitting Return Data:', {
+        billId,
+        returnProducts,
+      });
+
+      // Clear the form and array
+      returnProducts = [];
+      
+    });
+    function deleteRow(button){
+      const row = button.parentElement.parentElement; // Current row
+      const inputs = row.querySelectorAll('input'); // Input fields in the row
+      const productData = {}; // Object to store product details
+
+      // Populate the productData object
+      inputs.forEach(input => {
+        productData[input.name] = input.value.trim();
+      });
+      console.log(productData)
+      
+
+      // Validate inputs
+      if (!productData.productId || !productData.productName || !productData.productQuantity) {
+        alert('Please fill out all fields before deleting.');
+        return;
+      }
+
+      // Add product to the returnProducts array
+
+      let index=returnProducts.indexOf(productData)
+      console.log(index)
+      returnProducts.splice(index,1)
+      console.log(returnProducts)
+
+      inputs.forEach((inp)=>inp.value="")
+
+
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Form</title>
+    <link type="image/png" sizes="16x16" rel="icon" href="https://cdn-icons-png.freepik.com/256/12501/12501790.png?ga=GA1.1.1820960174.1718128542&semt=ais_hybrid">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Titillium+Web:ital,wght@0,400;0,600;0,700;0,900;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet"> -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+      font-family: 'Poppins', sans-serif;
+    }
+    h1, h2 {
+      font-family: 'Roboto', sans-serif;
+    }
+    </style>
+    
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="bg-gray-800 text-white w-64 p-6">
+        <h1 class="text-2xl font-bold mb-6">Shop Name</h1>
+        <nav>
+          <ul>
+            <li class="mb-4">
+              <a href="/dashboard" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h11M9 21V3m6 6h6m-6 6h6" />
+                </svg>
+                Dashboard
+              </a>
+            </li>
+            <li class="mb-4">
+              <a href="/bill/" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+                </svg>
+                Cart
+              </a>
+            </li>
+            <li class="mb-4">
+              <a href="/product/entry" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+                </svg>
+                Inventory
+              </a>
+            </li>
+            <li class="mb-4">
+              <a href="/product/update" class="flex items-center gap-2 p-2 rounded bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+                </svg>
+                Update Product
+              </a>
+            </li>
+            <li class="mb-4">
+              <a href="/" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+                </svg>
+              Add Product
+              </a>
+            </li>
+            <li class="mb-4">
+              <a href="/product/del" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+                </svg>
+                Delete Product
+              </a>
+            </li>
+            <li class="mb-4">
+              <a href="/user/udhar" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+                </svg>
+                Add Udhar Khata
+              </a>
+            </li>
+            <li class="mb-4">
+              <a href="#" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+                </svg>
+                Invoices
+              </a>
+            </li>
+            <li class="mb-4">
+              <a href="#" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+                </svg>
+                Purchase Orders
+              </a>
+            </li>
+            <li class="mb-4">
+              <a href="/user/day-book" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+                </svg>
+                Day Book
+              </a>
+            </li>
+            <li class="mb-4">
+              <a href="/product/return" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+                </svg>
+             Return Product
+              </a>
+            </li>
+            <li class="mb-4">
+              <a href="/user/chart-report" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+                </svg>
+                Reports
+              </a>
+            </li>
+            
+          </ul>
+        </nav>
+      </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+        <div class="form-container bg-white border-3 border-gray-800 p-8 rounded-lg shadow-lg mx-auto w-full max-w-3xl text-base">
+            <h2 class="text-center text-3xl font-bold text-gray-700 mb-8" style=" font-family: 'Roboto', sans-serif;">Update Product Item</h2>
+            <form action="/product/update" method="post" enctype="multipart/form-data" class="upadte-form">
+                <div class="form-group mb-6">
+                    <label for="pupdate" class="block text-gray-700 font-semibold mb-2">Search </label>
+                    <input type="text"  class="form-control p-2 w-full border rounded" name="psearch" id="pupdate" placeholder="Enter product name" oninput="handleUpdate()">
+                    <div class="drop-down roboto-regular" style="display: none;"></div>
+
+                    <label for="productName" class="block text-gray-700 font-semibold mb-2">Product Name</label>
+                    <input type="text" id="productName" name="productName" class="form-control p-2 w-full border rounded" id="productName" placeholder="Enter product name" required>
+
+                    <label for="productCategory" class="block text-gray-700 font-semibold mb-2">Product Category</label>
+                    <input type="text" id="productCategory" name="productCategory" class="form-control p-2 w-full border rounded" id="productName" placeholder="Enter product Category" required>
+
+                    
+                </div>
+                
+                
+                <div class="lg:form-group mb-6 flex items-center gap-4">
+                    <label for="productId" class="block text-gray-700 font-semibold">Product ID</label>
+                    <input type="text" name="productId" class="form-control p-2 w-1/3 border rounded" id="productId" readonly>
+
+                    <label for="quantity" class="block text-gray-700 font-semibold">Quantity</label>
+                    <input type="number" name="quantity" class="form-control p-2 w-1/3 border rounded" id="quantity" placeholder="Enter Available Quantity" required>
+                </div>
+
+                <div class="form-group mb-6 flex items-center gap-4">
+                    <label for="price" class="block text-gray-700 font-semibold mb-2 mt-4">Price</label>
+                    <input type="number" id="price" name="price" class="form-control p-2 w-full border rounded" id="Category" placeholder="Enter product price" required>
+
+                    <label for="productImage" class="block text-gray-700 font-semibold">Image URL</label>
+                    <input type="file" name="image" class="form-control p-2 w-3/5 border rounded" id="productImage">
+                </div>
+
+                <button type="submit" class="btn btn-primary bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 w-full" onclick="handleSubmit(e)">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- <script>
+    const successMessage = <%- JSON.stringify(successMessage) %>;
+    if (successMessage && successMessage.length > 0) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: successMessage[0],
+            showConfirmButton: false,
+            timer: 1500
+        });
+    }
+</script> -->
+
+
+<script>
+    
+    let successMessage1 = <%- JSON.stringify(successMessage1) %>;
+    if (successMessage1!=undefined && successMessage1.length > 0) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: successMessage1[0], // Display the first success message
+          showConfirmButton: false,
+          timer: 1500 // Auto-close after 1.5 seconds
+        });
+        
+        
+      }
+            
+    
+  
+    
+
+
+    async function handleUpdate(e){
+        
+        let inp=document.querySelector('#pupdate')
+        let dropdown=document.querySelector('.drop-down')
+        let pname=document.querySelector("#productName")
+        let pimage=document.querySelector("#productImage")
+        let pprice=document.querySelector('#price')
+        let ppid=document.querySelector('#productId')
+        let pquantity=document.querySelector('#quantity')
+        let pcat=document.querySelector("#productCategory")
+
+        let find=await fetch(`http://localhost:5500/product/search?q=${encodeURIComponent(inp.value)}`)
+        let res=await find.json()
+        dropdown.style.display="block"
+        
+        
+        dropdown.innerHTML=""
+        
+        res.map((item)=>{
+            
+            let div=document.createElement('div');
+            
+            div.innerHTML=`
+            
+            <h3>pid: ${item.ProductId}</h3>
+            <h3>pname: ${item.ProductName}</h3>
+            <hr>
+            `
+            
+            
+            dropdown.appendChild(div)
+            div.onclick=async function(){
+                
+                inp.value=""
+                dropdown.style.display='none'
+                
+                let data=await fetch(`http://localhost:5500/product/search/${item.ProductId}`)
+                let prod=await data.json()
+                ppid.value=item.ProductId
+                pname.value=item.ProductName
+                pprice.value=item.ProductPrice
+                pquantity.value=item.ProductQuantity
+                pcat.value=item.ProductCategory
+                
+
+
+                
+
+            }
+            
+            
+
+
+        })
+    
+        function handleSubmit(e){
+            
+
+            
+        window.location.href="http://localhost:5500/product/entry"
+        }
+        
+        
+        
+        
+        
+
+        
+
+
+}
+
+</script>
+
+</body>
+</html>

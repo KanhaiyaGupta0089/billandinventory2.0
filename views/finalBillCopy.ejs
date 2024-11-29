@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bill Layout</title>
+  <link type="image/png" sizes="16x16" rel="icon" href="https://cdn-icons-png.freepik.com/256/12501/12501790.png?ga=GA1.1.1820960174.1718128542&semt=ais_hybrid">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      .no-print {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-poppins">
+
+   <!-- Bill Container -->
+   <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg my-10">
+    <!-- Bill Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-3xl font-semibold text-gray-800">Invoice</h1>
+        <p class="text-sm text-gray-600">Bill No: <span class="font-bold">#<%=billId%></span></p>
+      </div>
+      <div class="text-right">
+        <p class="text-lg font-semibold text-gray-800">Kanha Ltd.</p>
+        <p class="text-sm text-gray-600">Greater Noida, Up</p>
+        <p class="text-sm text-gray-600">Email: kanhaLtd@gmail.com</p>
+        <p class="text-sm text-gray-600">Phone: +918809870812</p>
+      </div>
+    </div>
+
+    <!-- Customer Information -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+      <div>
+        <p class="text-lg font-semibold text-gray-800">Bill To:</p>
+        <p class="name text-sm text-gray-600"><b>Customer Name </b><input type="text" class="customer" id="cname" value="kg" required onblur="handleBlur(event,this.value)"></p>
+        <p class="email text-sm text-gray-600"><b>Email: </b><input type="email" name="email" id="cmail" value="gpranshu945@gmail.com" required onblur="handleBlur(event,this.value)"></p>
+        <p class="phone text-sm text-gray-600"><b>Mob.No: </b><input type="number" name="phoneNo" id="cnumber" value="8810846607" required onblur="handleBlur(event,this.value)"></p>
+      </div>
+      <div>
+        <p class="text-lg font-semibold text-gray-800">Date:</p>
+        <p class="text-sm text-gray-600"><%let date=new Date()%><%=date.toDateString()%></p>
+      </div>
+    </div>
+
+    <!-- Product Table -->
+    <table class="w-full table-auto border-collapse border border-gray-300">
+      <thead>
+        <tr>
+          <th class="px-4 py-2 text-sm text-gray-600 border-b border-gray-300 text-left">Product Id</th>
+          <th class="px-4 py-2 text-sm text-gray-600 border-b border-gray-300 text-center">ProductName</th>
+          <th class="px-4 py-2 text-sm text-gray-600 border-b border-gray-300 text-right">Unit Price</th>
+          <th class="px-4 py-2 text-sm text-gray-600 border-b border-gray-300 text-right">Quantity</th>
+          <th class="px-4 py-2 text-sm text-gray-600 border-b border-gray-300 text-right">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+    <!-- Bill Summary -->
+    <% let taxAmt=(billAmount*10)/100 %>
+    <div class="flex justify-between items-center mt-6">
+      <div>
+        <p class="text-lg font-semibold text-gray-800">Subtotal:</p>
+        <p class="text-sm text-gray-600">Items subtotal before tax</p>
+      </div>
+      <p class="text-lg font-semibold text-gray-800">₹ <%=billAmount%></p>
+    </div>
+    <div class="flex justify-between items-center mt-2">
+      <div>
+        <p class="text-lg font-semibold text-gray-800">Tax (10%):</p>
+      </div>
+      <p class="text-lg font-semibold text-gray-800">₹ <%=taxAmt%></p>
+    </div>
+    <div class="flex justify-between items-center mt-2 border-t pt-4">
+      <div>
+        <p class="text-lg font-semibold text-gray-800">Total Amount:</p>
+      </div>
+      <p class="text-lg font-semibold text-gray-800 text-green-700">₹<%=billAmount+taxAmt%></p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-between items-center mt-6">
+      <button id="print-btn" class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 no-print">
+        Print Invoice
+      </button>
+      <button id="pay-btn" class="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 no-print">
+        Proceed to Payment
+      </button>
+    </div>
+
+    <!-- Bill Footer -->
+    <div class="mt-6 text-center">
+      <p class="text-sm text-gray-600">Thank you for shopping with us!</p>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="payment-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+    <div class="modal-content bg-white rounded-lg shadow-lg w-full sm:w-96 p-6">
+      <h2 class="text-lg font-semibold text-gray-800 text-center mb-4">Payment Form</h2>
+
+      <!-- Payment Form -->
+      <form id="paymentForm" class="space-y-4">
+        <input type="text" id="amount" name="amount" placeholder="Enter Amount" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500" required />
+        <button type="submit" class="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Generate Payment QR
+        </button>
+      </form>
+
+      <!-- QR Code Display -->
+      <div id="qr-container" class="mt-6 text-center">
+        <img id="qrCode" alt="QR Code" class="hidden mx-auto" />
+      </div>
+
+      <!-- Payment Status -->
+      <p id="paymentStatus" class="text-center text-sm text-gray-600 mt-4 hidden">Payment Status: Pending</p>
+
+      <!-- Close Modal Button -->
+      <button id="close-modal" class="w-full mt-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+        Close
+      </button>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  // Print functionality
+  const data = <%- JSON.stringify(data) %>
+
+const amount='<%=billAmount%>'
+   window.addEventListener('load',async ()=>{
+    let paid=false
+    const amount2='<%=billAmount%>'
+    let cuname=document.querySelector('#cname').value;
+        
+        
+        // console.log(dayObj,paid)
+    
+    
+  
+
+   
+   let tbody=document.querySelector('tbody')
+
+   data.map((item)=>{ 
+    let tr=document.createElement('tr')
+
+      tr.innerHTML=`
+                    
+                    <td class="px-4 py-2 text-sm text-gray-800 border-b border-gray-300 text-left">${item.ProductId}</td>
+                    <td class="px-4 py-2 text-sm text-gray-800 border-b border-gray-300 text-center">${item.ProductName}</td>
+                    <td class="px-4 py-2 text-sm text-gray-800 border-b border-gray-300 text-right">₹ ${item.ProductPrice}</td>
+                    <td class="px-4 py-2 text-sm text-gray-800 border-b border-gray-300 text-right">${item.ProductQuantity}</td>
+                    <td class="px-4 py-2 text-sm text-gray-800 border-b border-gray-300 text-right">₹ ${item.ProductPrice*item.ProductQuantity}</td>
+
+                                
+                    
+                    `
+                    tbody.appendChild(tr)
+                       })
+                       
+                       
+                    }) 
+
+                    function handleBlur(e,value){
+      let p=e.target.parentElement;
+      let span=document.createElement('span')
+      span.innerHTML=value
+      span.id=e.target.id
+      console.log(span)
+      
+      
+      p.innerHTML=`<b>${p.querySelector('b').textContent}</b>`
+      p.appendChild(span)
+      console.log(p)
+
+    }
+  // Payment functionality
+  document.getElementById('pay-btn').addEventListener('click', () => {
+    alert('Redirecting to payment gateway...');
+    // Add payment gateway logic here
+  });
+           
+  document.getElementById('print-btn').addEventListener('click',async () => {
+    const billId='<%=billId%>'
+    window.print();
+    let cname=document.querySelector('#cname').innerHTML;
+  const mobo=document.querySelector('#cnumber')
+  // const customer=document.querySelector('.customer')
+  console.log(cname,mobo)
+
+  const content = document.querySelector('body'); // Select the content to capture
+ let btn=document.querySelectorAll('.no-print')
+ btn[0].style.display="none"
+ btn[1].style.display="none"
+ 
+const canvas=await html2canvas(content)
+ // Convert canvas to a data URL (base64 string)
+ const screenshot = canvas.toDataURL('image/png');
+ btn[0].style.display="inline-block"
+ btn[1].style.display="inline-block"
+  
+  const obj={
+    screenshot:screenshot,
+    mobo:mobo.innerHTML,
+    customer:cname,
+
+  }
+  let dayObj={
+            "customerName":cname,
+            "billAmount":amount,
+            "productCount":data.length
+        }
+        // console.log(dayObj)
+        let billObj={
+            billAmount:amount,
+            data,
+            billId
+        }
+  let [resp,resp1,resp2]=await Promise.all([
+  fetch("/bill/savebillimage",{
+            method:'PUT',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(obj)
+         }),
+        fetch("http://localhost:5500/user/day-book",{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json'
+        },
+        body:JSON.stringify(dayObj)
+    }),
+    fetch("http://localhost:5500/bill/create-finalbill",{
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json'
+        },
+        body:JSON.stringify(billObj)
+    })
+     
+  ])
+  if (!resp.ok) {
+      throw new Error(`Failed to update: ${resp.statusText}`);
+         }
+    
+    const data1 = await resp.json(); // Wait for JSON response
+    const data2=await resp1.json();
+    const data3=await resp2.json();
+      
+    console.log('Bill updated successfully:', data1);
+  
+
+
+
+  });
+    
+</script>
+
+</body>
+</html>

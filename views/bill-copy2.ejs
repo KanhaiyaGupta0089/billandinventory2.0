@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link
+  href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+  rel="stylesheet"
+/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    [data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      top: -2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 400px;
+      height: 100%;
+      background: white;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+      transition: right 0.3s ease-in-out;
+    }
+
+    .sidebar.open {
+      right: 0;
+    }
+   
+  </style>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex flex-wrap gap-4 justify-between items-center">
+    <h1 class="text-2xl font-semibold">Inventory Dashboard</h1>
+    <div class="flex flex-wrap items-center gap-4 w-full sm:w-auto">
+      <div class="relative">
+        <button class="sort-btn flex items-center rounded-md px-6 py-2 bg-gray-700 text-gray-200 hover:bg-gray-600 focus:outline-none">
+            <span>Sort By</span>
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+        <div class="absolute hidden bg-gray-800 text-gray-200 rounded-md shadow-lg w-3/3 mt-2 left-0 z-10" id="dropdownMenu">
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-700" onclick="handleSort('ProductPrice','desc')">Price- High to Low</a><hr>
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-700" onclick="handleSort('ProductPrice','asc')">Price- Low to High</a><hr>
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-700" onclick="handleSort('ProductQuantity','asc')">Stock- Low to High</a><hr>
+            
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-700" onclick="handleSort('ProductQuantity','desc')">Stock- High to Low</a><hr>
+        </div>
+    </div>
+      <button id="export-csv" class="text-white px-2 py-1 rounded-lg scale-100 hover:scale-110" onclick="jsonToExcel()"><img src="https://img.icons8.com/color/48/export-excel.png" class="h-10 w-10"  alt="Download Report"></button>
+      <button id="export-pdf" class="text-white px-2 py-1 rounded-lg scale-100 hover:scale-110" onclick="jsonToPdf()"><img src="https://img.icons8.com/?size=100&id=l0vjMqIboTRs&format=png&color=000000" class="h-10 w-10"  alt="Download Report"></button>
+      <input type="text" id="searchProduct" placeholder="Search..." class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 flex-grow sm:flex-grow-0" oninput="handleOnInput()">
+      <button id="openAddModal" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+        Add Product
+      </button>
+      <button onclick="toggleFilterMenu()" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">Filter</button>
+    </div>
+  </header>
+    <!-- Filter Menu -->
+    <div id="filterMenu" class="hidden bg-white shadow-md rounded-lg p-4 m-6">
+      <h2 class="text-lg font-semibold mb-4">Filter Options</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Category Filter -->
+        <div>
+          <label for="categoryFilter" class="block font-medium mb-2">Category</label>
+          <select id="categoryFilter" class="border border-gray-300 rounded-lg px-4 py-2 w-full">
+            
+            
+            <!-- <option value="Iron Materials">Iron Materials</option> -->
+            <!-- <option value="Wooden Doors">Wooden Doors</option> -->
+            <!-- <option value="Roofing Sheets">Roofing Sheets</option> -->
+          </select>
+        </div>
+        <!-- Stock Filter -->
+        <div>
+          <label class="block font-medium mb-2">Stock Status</label>
+          <div class="flex items-center gap-2">
+            <input id="inStockFilter" type="checkbox" class="w-4 h-4">
+            <label for="inStockFilter" class="text-gray-700">In Stock Only</label>
+            <input id="outStockFilter" type="checkbox" class="w-4 h-4 ml-2">
+            <label for="outStockFilter" class="text-gray-700">Out Of Stock Only</label>
+          </div>
+          
+        </div>
+        <!-- Price Filter -->
+        <div>
+          <label for="priceRangeFilter" class="block font-medium mb-2">Price Range</label>
+          <input id="priceRangeFilter" type="range" min="0" max="10000" step="100" class="w-full">
+          <div class="flex justify-between text-gray-600 mt-1">
+            <span>₹0</span>
+            <span id="priceValue">₹5000</span>
+            <span>₹10,000</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-4 mt-4">
+        <button onclick="toggleFilterMenu()" class="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300">Clear</button>
+        <button onclick="applyFilters()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Apply</button>
+      </div>
+    </div>
+
+  <!-- Main Content -->
+  <main class="p-6 flex gap-4">
+    <!-- Table -->
+    <div class="bg-white shadow rounded-lg overflow-x-auto w-full">
+      <table class="w-full border-collapse table-auto">
+        <thead class="bg-gray-200 text-left text-gray-700">
+          <tr>
+            <th class="px-6 py-4">ID</th>
+            <th class="px-6 py-4">Product Name</th>
+            <!-- <th class="px-6 py-4">SKU/ID</th> -->
+            <th class="px-6 py-4">Category</th>
+            <th class="px-6 py-4">Price</th>
+            <th class="px-6 py-4">Stock</th>
+            <th class="px-6 py-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="productTable">
+          <%let count=0%>
+          <% ans.map((item) => { %>
+            <% let stockLevel = item.ProductQuantity; %>
+            
+            <tr class="border-b border-gray-600">
+              <!-- <td class="p-3"><img src="/<%= item.ProductImage.replace(/\\/g, '/') %>" alt="Product Image" class="h-20 w-20 rounded-md"></td> -->
+              <td class="p-3"><%= item.ProductId %></td>
+              <td class="p-3"><%= item.ProductName %></td>
+             
+              <% const category = categoriesWithColors.find(c => c.name === item.ProductCategory);%>
+              <%let color=category.color  %>
+              <td class="p-3 flex justify-start items-center"><p class="category py-1 px-5" style="background: <%= category.color %>;border:1px solid blue;border-radius:5px;"><%= item.ProductCategory %></p></td>
+              <td class="p-3">₹<%= item.ProductPrice %></td>
+              <td class="p-3">
+               
+                <% if (stockLevel > 10) { %>
+                   
+                  <div class="bg-green-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center"><%=item.ProductQuantity%></div>
+                <% } else if (stockLevel < 10 && stockLevel > 0) { %>
+                  <div class="bg-orange-500 h-10 w-20 rounded-xl border-2 border-orange-700 flex justify-center items-center"><%=item.ProductQuantity%></div>
+                  
+                <% } else { %>
+                  <div class="bg-red-500 h-10 w-20 rounded-xl border-2 border-red-700 text-white flex justify-center items-center"><%=item.ProductQuantity%></div>
+                <% } %>
+                
+              </td>
+              <td class="px-6 py-4">
+                <button onclick="openEditModal('<%= item.ProductId %>')" class="text-blue-500 hover:underline">Edit</button>
+                <button class="text-red-500 hover:underline" onclick="handleDelete('<%= item.ProductId %>',this.parentElement)">Delete</button>
+              </td>
+            </tr>
+            <% count++ %>
+          <% }) %>
+        </tbody>
+      </table>
+      <div class="mt-4 flex justify-between items-center flex-wrap gap-4">
+        <p class="text-gray-600">Showing 1-10 of 50 products</p>
+        <div class="flex gap-2 p-4">
+          <% for(let i = 1; i <=pagecount; i++) { %>
+              
+            <a href="/product/entry?page=<%= i %>" class="px-3 py-1 border rounded-lg text-gray-600 hover:bg-gray-100"><%= i %></a>
+        <% } %>
+          <!-- <button >1</button> -->
+          <!-- <button class="px-3 py-1 border rounded-lg text-gray-600 hover:bg-gray-100">2</button> -->
+          <!-- <button class="px-3 py-1 border rounded-lg text-gray-600 hover:bg-gray-100">3</button> -->
+        </div>
+      </div>
+    </div>
+    
+  </main>
+
+  <!-- Sidebar (Add/Edit Product Form) -->
+  <div id="productSidebar" class="sidebar">
+    <div class="bg-white p-4 rounded-lg w-full h-full">
+      <h2 id="modalTitle" class="text-xl font-semibold mb-4">Add Product</h2>
+      
+      <form id="productForm" method="post" enctype="multipart/form-data" onsubmit="handleFormSubmit()">
+        <div class="mb-2">
+          <label for="productId" class="block font-medium mb-2">Product ID</label>
+          <input type="text" id="productId" name="ProductId" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="mb-4">
+          <label for="productName" class="block font-medium mb-2">Product Name</label>
+          <input type="text" id="productName" name="ProductName" placeholder="Enter product name"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="mb-2">
+          <label for="productCategory" class="block font-medium mb-2">Category</label>
+          <select id="productCategory" name="ProductCategory"class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+           
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="productPrice" class="block font-medium mb-2">Price (₹)</label>
+          <input type="number" id="productPrice" name="ProductPrice" placeholder="Enter product price" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="mb-2">
+          <label for="productStock" class="block font-medium mb-2">Stock Quantity</label>
+          <input type="number" id="productStock" name="ProductQuantity" placeholder="Enter stock quantity"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="mb-2">
+          
+          <label for="productImage" class="block font-medium text-bold">Image</label>
+          
+            <span id="currentFileName" class="text-red-500">No file uploaded</span>
+            
+          
+          <input type="file" id="ProductImage" name="image" 
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="flex justify-end gap-4">
+          <button type="button" onclick="closeSidebar()" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">Cancel</button>
+          <button type="submit" class="add px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+
+  <script>
+    let respArray=[]
+    let limit='<%=limit%>'
+let pageNo='<%=currPage%>'
+    let cg=<%-JSON.stringify(categoriesWithColors)%>
+    console.log(typeof cg);
+    console.log(cg);
+    
+    
+    
+     async function jsonToPdf(){
+      
+      const { jsPDF } = window.jspdf; // Get the jsPDF instance
+        const doc = new jsPDF(); // Create a new PDF document
+
+        // Add a title to the PDF
+        doc.text("Inventory report", 80, 10); // (text, x, y)
+
+        // Get the table
+        
+        const rows = document.querySelectorAll("tbody tr");
+
+// Extract data from the table, excluding the 4th column (Exclude field)
+const data = Array.from(rows).map((row) => {
+    const cells = Array.from(row.cells);
+    return [
+        cells[0].innerText, // ID
+        cells[1].innerText, // Name
+        cells[2].innerText,
+        "Rs "+`${cells[3].innerText.split('₹')[1]}`,
+        cells[4].innerText,
+        
+    ];
+});
+
+// Define column headers
+const headers = [["ID", "ProductName", "Category","Price","Stock"]]; // Exclude unwanted column
+
+// Add the table to the PDF
+doc.autoTable({
+    head: headers,
+    body: data,
+    startY: 20, // Start position below the title
+    styles: { fontSize: 10, cellPadding: 3, halign: "center" },
+});
+        
+
+   
+
+        // Download the PDF
+        doc.save(`InventoryReport${new Date().toDateString()}.pdf`); 
+     }
+
+    function jsonToExcel(){
+      
+        // Select table
+        const table = document.querySelector("table");
+        const rows = Array.from(table.rows);
+        
+
+        // Filter out the 'Category' column (4th column)
+        const filteredData = rows.map((row) =>
+        
+            Array.from(row.cells)
+            .filter((_, index) => index !== 5) // Exclude 4th column
+                .map((cell) => cell.innerText)
+        );
+        console.log(filteredData);
+        
+
+        // Convert table to a worksheet
+        const worksheet = XLSX.utils.aoa_to_sheet(filteredData);
+        console.log(worksheet);
+        
+
+        
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        XLSX.writeFile(workbook, "data.csv");
+    };
+    
+
+function darkenRGB(rgb, percent) {
+            let [r, g, b] = rgb
+                .replace(/[^\d,]/g, '') // Remove any non-numeric characters
+                .split(',')
+                .map(Number); // Convert to numbers
+
+            // Darken each channel by reducing the value by the  given percentage
+            r = Math.floor(r * (1 - percent));
+            g = Math.floor(g * (1 - percent));
+            b = Math.floor(b * (1 - percent));
+
+            // Ensure the color values are within the valid range (0-255)
+            r = Math.max(0, Math.min(255, r));
+            g = Math.max(0, Math.min(255, g));
+            b = Math.max(0, Math.min(255, b));
+
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        
+        let tbody3 = document.querySelector('tbody');
+async function handleOnInput() {
+         let tcontent=document.querySelector('tbody').innerHTML
+         
+            let inp = document.querySelector('#searchProduct');
+            console.log(inp.value)
+            if(inp.value!=""){
+            // let search = await fetch(`http://localhost:5500/product/search?q=${encodeURIComponent(inp.value)}`);
+            let search = await fetch(`http://localhost:5500/product/search?q=${encodeURIComponent(inp.value)}`);
+            let tbody = document.querySelector('tbody');
+            let ans = await search.json();
+            tbody.innerHTML = "";
+ 
+            let category=await fetch("http://localhost:5500/product/all-category")
+            let resp=await category.json()
+            console.log("res",resp)
+            // respArray=resp
+            
+              
+            ans.forEach(async (item) => {
+              const categ =resp.find(cat => cat.name === item.ProductCategory);
+             
+              console.log(categ);
+              
+                let stockLevel = item.ProductQuantity;
+                let stockIndicator;
+                if (stockLevel > 10) {
+                    stockIndicator = `    <div class="bg-green-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                } else if (stockLevel < 10 && stockLevel > 0) {
+                    stockIndicator = `    <div class="bg-orange-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                } else {
+                    stockIndicator = `    <div class="bg-red-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                }
+                let tr = document.createElement('tr');
+                tr.className = "border-b border-gray-600 font-medium";
+                
+                tr.innerHTML = `
+                    <td class="p-3">${item.ProductId}</td>
+                    <td class="p-3">${item.ProductName}</td>
+                  <td class="p-3 flex justify-start items-center">
+    <p class="category py-1 px-5" style="background-color:${categ.color};border:1px solid blue; border-radius:5px;">
+      ${item.ProductCategory}
+    </p>
+  </td>
+                    
+                  
+                    <td class="p-3">₹${item.ProductPrice}</td>
+                    
+                  
+                   
+                    <td class="p-3">${stockIndicator}</td>
+                    <td class="px-6 py-4">
+                <button onclick="openEditModal(${item.ProductId})" class="text-blue-500 hover:underline">Edit</button> |
+                <button class="text-red-500 hover:underline" onclick=${item.ProductId}>Delete</button>
+              </td>
+             <hr>
+                    
+                `;
+                
+                tbody.appendChild(tr);
+            
+                
+            });
+          }else{
+            tbody3.innerHTML=tcontent
+          }
+        }
+    // Function to open the modal for adding a product
+    document.getElementById('openAddModal').addEventListener('click', () => {
+      document.getElementById('productSidebar').classList.add('open');
+      document.getElementById('modalTitle').innerText = 'Add Product';
+      document.getElementById('productForm').reset();
+    });
+
+    // Function to open the modal for editing a product
+    async function openEditModal(productId) {
+      document.getElementById('productSidebar').classList.add('open');
+      document.getElementById('modalTitle').innerText = 'Edit Product';
+      // Prefill form with product details (you need to fetch the product details)
+      let product=await fetch(`http://localhost:5500/product/search/${productId}`)
+      let result=await product.json()
+      document.getElementById('productId').value=productId;
+      document.getElementById('productName').value = result.ProductName; // Replace with dynamic data
+      document.getElementById('productCategory').value = result.ProductCategory; // Replace with dynamic data
+      document.getElementById('productPrice').value = result.ProductPrice; // Replace with dynamic data
+      document.getElementById('productStock').value = result.ProductQuantity; // Replace with dynamic data
+      
+      let len=result.ProductImage.split('-').length
+      document.getElementById('currentFileName').innerHTML=result.ProductImage?result.ProductImage.split('-')[len-1]:"No Image found";
+      
+    }
+
+    // Function to close the sidebar
+    function closeSidebar() {
+      document.getElementById('productSidebar').classList.remove('open');
+    }
+    const filterMenu = document.getElementById("filterMenu");
+    const priceRangeFilter = document.getElementById("priceRangeFilter");
+    const priceValue = document.getElementById("priceValue");
+
+    function toggleFilterMenu() {
+      filterMenu.classList.toggle("hidden");
+    }
+
+    priceRangeFilter.addEventListener("input", async () => {
+      priceValue.textContent = `₹${priceRangeFilter.value}`;
+    });
+
+
+    async function applyFilters() {
+      const category= document.getElementById("categoryFilter").value;
+    const priceRange = document.getElementById("priceRangeFilter").value;
+    const inFilter = document.getElementById("inStockFilter").checked;
+    const outFilter = document.getElementById("outStockFilter").checked;
+    let tbody=document.querySelector('tbody')
+    console.log(category,priceRange,inFilter,outFilter)
+    const filter={
+      category,
+      priceRange:priceRange,
+      inFilter,
+      outFilter
+    }
+    
+  const query = new URLSearchParams(filter);
+  
+
+  
+  const response = await fetch(`/product/prod-filter?${query.toString()}`);
+  const products = await response.json();
+
+  
+  console.log(products);
+   tbody.innerHTML=""
+
+  products.forEach(async (item) => {
+              const categ =respArray.find(cat => cat.name === item.ProductCategory);
+             
+              console.log(categ);
+              
+                let stockLevel = item.ProductQuantity;
+                let stockIndicator;
+                if (stockLevel > 10) {
+                    stockIndicator = `    <div class="bg-green-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                } else if (stockLevel < 10 && stockLevel > 0) {
+                    stockIndicator = `    <div class="bg-orange-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                } else {
+                    stockIndicator = `    <div class="bg-red-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                }
+                let tr = document.createElement('tr');
+                tr.className = "border-b border-gray-600 font-medium";
+                
+                tr.innerHTML = `
+                    <td class="p-3">${item.ProductId}</td>
+                    <td class="p-3">${item.ProductName}</td>
+                  <td class="p-3 flex justify-start items-center">
+    <p class="category py-1 px-5" style="background-color:${categ.color};border:1px solid blue; border-radius:5px;">
+      ${item.ProductCategory}
+    </p>
+  </td>
+                    
+                  
+                    <td class="p-3">₹${item.ProductPrice}</td>
+                    
+                  
+                   
+                    <td class="p-3">${stockIndicator}</td>
+                    <td class="px-6 py-4">
+                <button onclick="openEditModal(${item.ProductId})" class="text-blue-500 hover:underline">Edit</button> |
+                <button class="text-red-500 hover:underline">Delete</button>
+              </td>
+             <hr>
+                    
+                `;
+                
+                tbody.appendChild(tr);
+            
+                
+            });
+
+
+      
+      console.log("Filters Applied");
+    }
+
+    function clearFilters() {
+      console.log("Filters Cleared");
+    }
+    document.addEventListener('DOMContentLoaded',async ()=>{
+       let category=await fetch("http://localhost:5500/product/all-category")
+       let resp=await category.json()
+       console.log(resp);
+       respArray=resp
+       
+       let select=document.querySelector('#productCategory')
+       console.log(select);
+       let opt=document.createElement('option')
+       opt.innerHTML="All"
+       
+       select.appendChild(opt)
+       
+       let select2=document.querySelector('#categoryFilter')
+       console.log(select2);
+       let opt2=document.createElement('option')
+       opt2.innerHTML="All"
+       
+       
+       select2.appendChild(opt2)
+       
+       resp.map((categ)=>{
+        const option = document.createElement('option')
+        const option2=document.createElement('option')
+        option.innerHTML=categ.name
+        option2.innerHTML=categ.name
+        select.appendChild(option)
+        select2.appendChild(option2)
+       })
+       let option=document.createElement('option')
+       option.innerHTML="Other..."
+       select.appendChild(option)
+       
+       
+        
+
+       
+       
+       
+      //  console.log(select);
+       
+    
+    })
+
+    async function handleSort(field,order){
+  let tbody=document.querySelector('tbody')
+  tbody.innerHTML=""
+
+  
+
+  
+  console.log(pageNo)
+
+  
+    let obj={
+        "field":field,
+         "order":order,
+         "limit":limit,
+         "page":pageNo
+        }
+   
+    let resp=await fetch(`http://localhost:5500/product/filter/${JSON.stringify(obj)}`)
+    
+
+    let data=await resp.json()
+    console.log(data)
+
+
+    data.forEach(async (item) => {
+              const categ =respArray.find(cat => cat.name === item.ProductCategory);
+             
+              console.log(categ);
+              
+                let stockLevel = item.ProductQuantity;
+                let stockIndicator;
+                if (stockLevel > 10) {
+                    stockIndicator = `    <div class="bg-green-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                } else if (stockLevel < 10 && stockLevel > 0) {
+                    stockIndicator = `    <div class="bg-orange-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                } else {
+                    stockIndicator = `    <div class="bg-red-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                }
+                let tr = document.createElement('tr');
+                tr.className = "border-b border-gray-600 font-medium";
+                
+                tr.innerHTML = `
+                    <td class="p-3">${item.ProductId}</td>
+                    <td class="p-3">${item.ProductName}</td>
+                  <td class="p-3 flex justify-start items-center">
+    <p class="category py-1 px-5" style="background-color:${categ.color};border:1px solid blue; border-radius:5px;">
+      ${item.ProductCategory}
+    </p>
+  </td>
+                    
+                  
+                    <td class="p-3">₹${item.ProductPrice}</td>
+                    
+                  
+                   
+                    <td class="p-3">${stockIndicator}</td>
+                    <td class="px-6 py-4">
+                <button onclick="openEditModal(${item.ProductId})" class="text-blue-500 hover:underline">Edit</button>
+                <button class="text-red-500 hover:underline" onclick="handleDelete(${item.ProductId},this.parentElement)">Delete</button>
+              </td>
+             <hr>
+                    
+                `;
+                
+                tbody.appendChild(tr);
+            
+                
+            });
+}
+document.querySelector('.sort-btn').addEventListener('click', () => {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.classList.toggle('hidden');
+        });
+
+function displayData(arr,resp){
+  let tbody=document.querySelector('tbody')
+  arr.forEach(async (item) => {
+    if(resp){
+              const categ =resp.find(cat => cat.name === item.ProductCategory);
+             
+              console.log(categ);
+    }
+              
+                let stockLevel = item.ProductQuantity;
+                let stockIndicator;
+                if (stockLevel > 10) {
+                    stockIndicator = `    <div class="bg-green-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                } else if (stockLevel < 10 && stockLevel > 0) {
+                    stockIndicator = `    <div class="bg-orange-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                } else {
+                    stockIndicator = `    <div class="bg-red-500 h-10 w-20 rounded-xl border-2 border-green-700 flex justify-center items-center">${item.ProductQuantity}</div>`;
+                }
+                let tr = document.createElement('tr');
+                tr.className = "border-b border-gray-600 font-medium";
+                
+                tr.innerHTML = `
+                    <td class="p-3">${item.ProductId}</td>
+                    <td class="p-3">${item.ProductName}</td>
+                  <td class="p-3 flex justify-start items-center">
+    <p class="category py-1 px-5" style="background-color:${categ.color};border:1px solid blue; border-radius:5px;">
+      ${item.ProductCategory}
+    </p>
+  </td>
+                    
+                  
+                    <td class="p-3">₹${item.ProductPrice}</td>
+                    
+                  
+                   
+                    <td class="p-3">${stockIndicator}</td>
+                    <td class="px-6 py-4">
+                <button onclick="openEditModal(${item.ProductId})" class="text-blue-500 hover:underline">Edit</button> |
+                <button class="text-red-500 hover:underline" onclick=handleDelete(${item.ProductId},this.parentElement())>Delete</button>
+              </td>
+             <hr>
+                    
+                `;
+                
+                tbody.appendChild(tr);
+            
+                
+            });
+
+
+
+}
+
+
+ async function handleFormSubmit(){
+
+  let formType=document.getElementById('modalTitle').innerText
+
+  
+
+
+  // let ProductName=document.querySelector('#productName').value
+  // let ProductPrice=document.querySelector('#productPrice').value
+  // let ProductQuantity=document.querySelector('#productStock').value
+  // let image=document.querySelector('#productImage').value
+  // let ProductId=document.querySelector('#productId').value
+  // let ProductCategory=document.querySelector('#productCategory').value
+
+  // let addObj={
+  //   ProductId,
+  //   ProductName,
+  //   ProductPrice,
+  //   ProductQuantity,
+  //   image,
+  //   ProductCategory
+  // }
+  // console.log(addObj)
+
+  const form=document.getElementById('productForm');
+  if(formType=="Add Product")
+  form.action='/product/create'
+else if(formType=="Edit Product")
+form.action='/product/update2'
+  
+  
+  
+  
+
+  // let addProd=await fetch("http://localhost:5500/product/create",{
+  //   method:'POST',
+  //   headers:{
+  //     'Content-Type':'application/json'
+  //   },
+  //   body:JSON.stringify(addObj)
+  // })
+  // let addProdResp=await addProd.json()
+  // console.log(addProdResp)
+
+
+}
+
+async function handleDelete(productId,trow){
+  
+  let p1=trow.parentElement
+  let p2=trow.parentElement.parentElement
+  
+  
+  let delProd=await fetch(`http://localhost:5500/product/delete2/${productId}`)
+  let resp=await delProd.json();
+
+  
+}
+   
+  </script>
+</body>
+
+</html>

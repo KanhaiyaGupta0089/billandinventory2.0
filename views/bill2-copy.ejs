@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bill</title>
+    <link rel="stylesheet" href="/css/style.css" type="text/css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Slab:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&family=Titillium+Web:ital,wght@0,400;0,600;0,700;0,900;1,300;1,400;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <header class="bg-gray-800 w-full fixed top-0 left-0 shadow-md">
+      <div
+        class="container mx-auto flex justify-between items-center py-4 px-6"
+      >
+        <h1 class="text-2xl font-medium text-white">Shop Name</h1>
+        <nav>
+          <ul class="flex space-x-8 text-lg">
+            <li><a href="/" class="hover:text-yellow-500">Add Product</a></li>
+            <li>
+              <a href="/product/del" class="hover:text-yellow-500"
+                >Delete Product</a
+              >
+            </li>
+            <li>
+              <a href="/product/update" class="hover:text-yellow-500"
+                >Update Product</a
+              >
+            </li>
+            <li>
+              <a href="/dashboard" class="hover:text-yellow-500">DASHBOARD</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="main-container md:mt-12">
+      <div class="table-container">
+        <table border="2" class="bill">
+          <thead>
+            <tr>
+              <th class="bg-gray-800">ProductId</th>
+              <th class="bg-gray-800">ProductName</th>
+              <th class="bg-gray-800">ProductPrice</th>
+              <th class="bg-gray-800">Quantity</th>
+            </tr>
+          </thead>
+          <tbody class="item-entry">
+            <!-- Dynamically populated rows will go here -->
+          </tbody>
+        </table>
+        <div class="total-container" id="money"></div>
+      </div>
+
+      <div class="controls">
+        <div class="action-container">
+          <button
+            onclick="handleQrClick()"
+            class="border-2 border-blue-700 outline-none rounded-md px-4 py-2 text-l font-bold bg-blue-400 hover:bg-blue-700 text-white"
+          >
+            Scan QR
+          </button>
+          <input
+            type="text"
+            oninput="handleOnInput()"
+            class="find mt-2"
+            placeholder="Search for product 🔍"
+          />
+          <form action="/bill/printbill" method="post" class="bill-form">
+            <button
+              type="submit"
+              onclick="handleBill()"
+              class="outline-none border-2 border-red-700 font-bold rounded-md px-4 py-2 text-l bg-red-400 hover:bg-red-700 text-white"
+            >
+              Bill
+            </button>
+          </form>
+        </div>
+        <div id="reader"></div>
+        <div
+          id="dropdownContainer"
+          class="dropdown"
+          style="display: none"
+        ></div>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+              const warningMessage1 = <%- JSON.stringify(warningMessage1) %>;
+              console.log(warningMessage1)
+            if (warningMessage1!=undefined && warningMessage1.length > 0) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'warning!',
+                text: warningMessage1[0], // Display the first success message
+                showConfirmButton: false,
+                timer: 700
+              });
+            }
+              var sum = 0;
+              var selectedProduct = [];
+
+              async function handleQrClick() {
+
+
+
+
+          const html5QrCode = new Html5Qrcode("reader"); // Initialize scanner
+          const config = { fps: 10, qrbox: 250 }; // Configuration
+          let hasScanned = false; // Flag to prevent duplicate scans
+
+          try {
+              // Start the scanner and use the back camera if available
+              let ordQty=1
+              await html5QrCode.start(
+                  { facingMode: "environment" },
+                  config,
+                  async (decodedText) => {
+                    
+                      if (hasScanned) return; // Prevent duplicate scans
+                      hasScanned = true; // Set flag to true after first scan
+
+                      console.log(`QR Code detected: ${decodedText}`);
+                      let searchTerm = decodedText;
+                      const addProd={
+                            'ProductName':"",
+                            'ProductPrice':"",
+                            'ProductQuantity':0,
+                            'ProductId':""
+                            
+
+                        }
+                      try {
+                          // Fetch product data
+                          let res = await fetch(`/product/search/${decodedText}`);
+                          let data2 = await res.json();
+                          console.log(data2);
+                          let data=[data2]
+                          console.log(data)
+                  data.map((result)=>{
+                    console.log(result)
+                          addProd.ProductName=result.ProductName
+                            addProd.ProductPrice=result.ProductPrice
+                            addProd.ProductQuantity=ordQty
+                           addProd.ProductId=result.ProductId
+                            
+
+                        
+                    
+
+                          const index = selectedProduct.findIndex(obj => obj.ProductId == result.ProductId);
+                              console.log(index)
+
+                              if(index==-1){
+                              let trow = document.createElement('tr');
+                              trow.classList.add("prod-row")
+                              console.log(trow)
+                              
+                            trow.innerHTML=`
+                            <td>${result.ProductId}</td>
+                            <td>${result.ProductName}</td>
+                            <td>₹ ${result.ProductPrice}</td>
+                            <td class="quantity">1</td>
+                            
+                            `
+
+                            document.querySelector('.item-entry').appendChild(trow);
+
+                              selectedProduct.push(addProd)
+
+                              console.log(selectedProduct);
+                              }else{
+                                let tableRow=document.querySelectorAll('.prod-row')
+                                let cqty=tableRow[index].querySelector('.quantity').textContent
+                                tableRow[index].querySelector('.quantity').textContent=Number(cqty)+1
+
+                              }
+                            })
+
+                          // let trow = document.createElement('tr');
+                          // trow.classList.add("prod-row");
+                          // selectedProduct.push(data);
+                          // console.log(selectedProduct);
+
+                          // let keys = ['ProductId', 'ProductName', 'ProductPrice'];
+                          // let i = 0;
+
+                          // // Populate table row with product data
+                          // Object.entries(data).map(entry => {
+                          //     let key = entry[0];
+                          //     let value=entry[1];
+                          //     if (keys.includes(key)) {
+                          //         let tdata = document.createElement('td');
+
+
+                          //         tdata.innerHTML = data[keys[i++]];
+                          //         trow.appendChild(tdata);
+                          //     }
+                          // });
+
+                          // document.querySelector('.item-entry').appendChild(trow);
+
+                          // Send data to the backend to create a bill
+                          console.log(addProd)
+                          let fetchedData = await fetch("/bill/create-bill", {
+                              method: 'POST',
+                              headers: {
+                                  'Content-Type': 'application/json',
+                              },
+                              body: JSON.stringify(addProd)
+                          });
+
+                          let res2 = await fetchedData.json();
+                          console.log(res2);
+
+      //                     // Calculate total amount
+                          let sum = selectedProduct.reduce((acc, item) => acc + item.ProductPrice, 0);
+                          document.querySelector('#money').innerHTML = `<h2>Total Amount = ₹${sum}</h2>`;
+
+                      } catch (error) {
+                          console.error("Error processing QR code data:", error);
+                      } finally {
+                          // Stop the scanner after successful scan
+                          console.log(selectedProduct)
+                          await html5QrCode.stop();
+                          // console.log("QR Code scanning stopped.");
+                      }
+                  }
+              );
+          } catch (err) {
+              console.error("Error accessing camera:", err);
+          }
+      }
+
+
+
+
+
+
+
+
+              async function handleOnInput() {
+
+
+
+                  let searchTerm = document.querySelector('.find').value;
+                  let container = document.getElementById('dropdownContainer');
+                  if (!searchTerm) {
+                      container.style.display = 'none';
+                      return;
+                  }
+                  // console.log(know.value);
+              
+                  
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+           let res = await fetch(`/product/search?q=${encodeURIComponent(searchTerm)}`);
+           let data = await res.json();  
+                  console.log("cached array",data)
+                  // console.log(typeof (data));
+                  const dropdownContainer = document.getElementById('dropdownContainer');
+                  dropdownContainer.innerHTML = '';
+                  if (data.length > 0) {
+                      container.style.display = 'block';
+
+
+
+                      data.forEach((result) => {
+                          console.log(result)
+                          const item = document.createElement('div');
+                          item.classList.add('dropdown-item');
+                          if(result.ProductQuantity>10){
+                          item.innerHTML = `
+                          
+                          <strong><img src='https://cdn-icons-png.flaticon.com/128/294/294432.png' style="max-width:20px;max-height:20px;object-cover:fit;border:none"/>Pid = ${result.ProductId}</strong><br>
+                          <strong>Pname = ${result.ProductName}</strong><br>
+                          <strong>PPrice = ${result.ProductPrice}</strong><br>
+                          
+                          
+                          
+                          <hr>`;
+                        }
+                          else if(result.ProductQuantity<10&&result.ProductQuantity>0){
+                            item.innerHTML=`
+                            <strong><img src='https://cdn-icons-png.flaticon.com/128/10461/10461004.png' style="max-width:20px;max-height:20px;object-cover:fit;border:none"/>Pid = ${result.ProductId}</strong><br>
+                            <strong>Pname = ${result.ProductName}</strong><br>
+                            <strong>Pname = ${result.ProductQuantity}</strong><br>
+                            <strong>PPrice = ${result.ProductPrice}</strong><br>
+                          
+                          
+                            <strong style="color:red">Item Low stock</strong>
+
+                            `
+
+                          }
+                          else{
+                            item.innerHTML=`
+                            <strong><img src='https://cdn-icons-png.flaticon.com/128/391/391247.png' style="max-width:20px;max-height:20px;object-cover:fit;border:none"/>Pid = ${result.ProductId}</strong><br>
+                            <strong>Pname = ${result.ProductName}</strong><br>
+                            <strong>Pname = ${result.ProductQuantity}</strong><br>
+                            <strong>PPrice = ${result.ProductPrice}</strong><br>
+                          <strong style="color:red">Item Out Of Stock</strong>
+                              
+                            
+                            
+                            
+                            <hr>
+                            
+                          
+                         `
+                         item.style.pointerEvents="none"
+                         item.style.opacity="0.7"
+                          }
+
+
+
+
+
+
+                          // console.log(result);
+
+
+
+                          console.log(selectedProduct);
+                          console.log(typeof (selectedProduct))
+                          let ordQty=1
+                          item.onclick = async function () {
+                              let update=await fetch("http://localhost:5500/product/update",{
+                                      method:'POST',
+                                      headers:{
+                                          'Content-Type':'application/json'
+                                      },
+                                      body:JSON.stringify({
+                                          productId:result.ProductId,
+                                          quantity:result.ProductQuantity-1
+                                      })
+                                  })
+                                  const addProd={
+                            'ProductName':result.ProductName,
+                            'ProductPrice':result.ProductPrice,
+                            'ProductQuantity':ordQty,
+                            'ProductId':result.ProductId
+                            
+
+                        }
+
+                              let searchField = document.querySelector('.find')
+                              searchField.value = "";
+                              dropdownContainer.style.display = 'none';
+                              const index = selectedProduct.findIndex(obj => obj.ProductId == result.ProductId);
+                              console.log(index)
+
+                              if(index==-1){
+                              let trow = document.createElement('tr');
+                              trow.classList.add("prod-row")
+                              console.log(trow)
+                              
+                            trow.innerHTML=`
+                            <td>${result.ProductId}</td>
+                            <td>${result.ProductName}</td>
+                            <td>₹ ${result.ProductPrice}</td>
+                            <td class="quantity">${ordQty}</td>
+                            
+                            `
+
+                            document.querySelector('.item-entry').appendChild(trow);
+
+                              selectedProduct.push(addProd)
+
+                              console.log(selectedProduct);
+                              }else{
+                                let tableRow=document.querySelectorAll('.prod-row')
+                                let cqty=tableRow[index].querySelector('.quantity').textContent
+                                tableRow[index].querySelector('.quantity').textContent=Number(cqty)+1
+
+                              }
+
+
+                              // let keys = ['ProductId', 'ProductName', 'ProductPrice','ProductQuantity']
+                              // let i = 0;
+                              
+                              // Object.entries(result).map(entry => {
+
+                              //     let key = entry[0];
+                              //     let value = entry[1];
+                              //     if (selectedProduct.some(product => product[key] === value)){
+                              //     if (keys.includes(key)) {
+                                    
+                              //         let tdata = document.createElement('td');
+                              //         if(key=='ProductPrice')
+                              //         tdata.innerHTML ='₹'+result[keys[i++]];
+                              //       else if(key=='ProductQuantity'){
+                              //       tdata.innerHTML =ordQty;
+                              //       tdata.style='quantity'
+                                    
+                              //       }
+
+                              //       else
+                              //         tdata.innerHTML = result[keys[i++]];
+                              //         trow.appendChild(tdata);
+
+                              //         // console.log(key, value);
+                              //     }
+                              //   }else{
+                              //     console.log("equal")
+                              //   }
+                                
+
+
+                              // });
+
+                              // document.querySelector('.item-entry').appendChild(trow);
+
+                              // sessionStorage.setItem('data',JSON.stringify(selectedProduct))
+                              // console.log(result)
+                              let data=await fetch("/bill/create-bill",{
+                              method:'POST',
+                              headers:{
+                                  'Content-Type':'application/json',
+                              },
+                              body:JSON.stringify(addProd)
+                             })
+                             let res=await data.json();
+                             console.log(res);
+
+                              document.querySelector('#money').innerHTML = `<h2>Total Amount = ₹${sum}</h2>`
+
+                          }
+                          dropdownContainer.appendChild(item)
+                      });
+                  } else {
+                      dropdownContainer.style.display = 'none';
+                  }
+
+                  document.addEventListener('click', (e) => {
+                      let inp = document.querySelector('.find')
+                      if (!inp.contains(e.target) && !container.contains(e.target)) {
+                          dropdownContainer.style.display = 'none';
+                      }
+                  })
+
+                }
+              
+
+              async function handleBill() {
+                  const tcontent=document.querySelector('tbody')
+
+
+
+                  window.location.href="/bill/printbill"
+
+
+
+                  
+
+                  const entry=document.querySelector('.item-entry');
+                  entry.innerHTML=""
+
+
+
+
+
+
+                  // console.log(selectedProduct);
+              }
+    </script>
+  </body>
+</html>
