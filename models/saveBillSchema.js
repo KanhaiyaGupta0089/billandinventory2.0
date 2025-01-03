@@ -6,6 +6,10 @@ const { Schema,model, default: mongoose } = require("mongoose");
 // mongoose.connect('mongodb://localhost:27017/formsubmit').then(() => console.log('MongoDB connected'))
 // .catch(err => console.error('MongoDB connection error:', err));
 
+const moment = require('moment-timezone');
+const localDate = moment().tz("Asia/Kolkata").format();  // Adjusts to your local time zone
+
+
 
 
 
@@ -31,18 +35,19 @@ MobileNumber:{
         
     }, 
     BillAmount:{
-        type:String,
+        type:Number,
         default:0,
         required:true
     },
     BillDate:{
         type:Date,
-        default:new Date().toISOString()
+        default:localDate
     },
     Products:[{
         ProductId:{
             type:String,
-            required:true
+            required:true,
+            unique:true
         },
         ProductName:{
             type:String,

@@ -2,7 +2,7 @@ const udharModel=require('../models/udharSchema')
 const saveBillModel=require('../models/saveBillSchema')
 const dayBookModel=require('../models/dayBookSchema')
 const userModel=require('../models/user')
-const bcrypt=require('bcrypt')
+const bcrypt=require('bcryptjs')
 const showUdhar=(req,res)=>{
     res.render('udhar')
 }
@@ -97,7 +97,7 @@ const getAllDayData=async(req,res)=>{
     const today = new Date();
 today.setHours(0, 0, 0, 0);
     let billData=await saveBillModel.find({BillDate:{$gte:today}})
-    console.log(billData)
+    console.log("today bills",billData)
     
 
     let allData=[]
@@ -150,6 +150,45 @@ const getEmpDetail=async(req,res)=>{
     
     res.json(empData)
 }
+
+const renderInventoryDashboard=(req,res)=>{
+    res.render('inventoryDashboard')
+}
+
+const getSaleReport=async (req,res)=>{
+     let type=req.params.type;
+     const today = new Date();
+today.setHours(0, 0, 0, 0);
+today.setDate(today.getDate()-7)
+     let report=await saveBillModel.aggregate([
+        {
+            $match:{
+                BillDate:{$gte:today}
+            }
+        },
+        {
+            $project:{
+                BillDate:{$dateToString:{format:"%Y-%m-%d",date:"$BillDate"}},
+                BillAmount:{$toDouble:"$BillAmount"}
+            }
+            },
+            {
+                $group:{
+                _id:"$BillDate",
+                totalSales:{$sum:"$BillAmount"},
+                // count:{$count:{}}
+            }
+        },
+        {
+            $sort:{_id:1}
+        }
+        ])
+     console.log(report)
+     
+
+     res.json(report)
+    
+}
 module.exports={
     showUdhar,
     handleUdhar,
@@ -163,6 +202,7 @@ module.exports={
     getAllDayData,
     addEmployee,
     renderEmpList,
-    getEmpDetail
-
+    getEmpDetail,
+    renderInventoryDashboard,
+    getSaleReport
 }

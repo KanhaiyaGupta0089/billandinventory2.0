@@ -94,6 +94,7 @@
           style="display: none"
         ></div>
       </div>
+      
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
@@ -287,7 +288,7 @@
 
            let res = await fetch(`/product/search?q=${encodeURIComponent(searchTerm)}`);
            let data = await res.json();  
-                  console.log("cached array",data)
+                  // console.log("cached array",data)
                   // console.log(typeof (data));
                   const dropdownContainer = document.getElementById('dropdownContainer');
                   dropdownContainer.innerHTML = '';
@@ -300,7 +301,7 @@
                           console.log(result)
                           const item = document.createElement('div');
                           item.classList.add('dropdown-item');
-                          if(result.ProductQuantity>10){
+                          if(result.ProductQuantity>=10){
                           item.innerHTML = `
                           
                           <strong><img src='https://cdn-icons-png.flaticon.com/128/294/294432.png' style="max-width:20px;max-height:20px;object-cover:fit;border:none"/>Pid = ${result.ProductId}</strong><br>
@@ -356,16 +357,16 @@
                           console.log(typeof (selectedProduct))
                           let ordQty=1
                           item.onclick = async function () {
-                              let update=await fetch("http://localhost:5500/product/update",{
-                                      method:'POST',
-                                      headers:{
-                                          'Content-Type':'application/json'
-                                      },
-                                      body:JSON.stringify({
-                                          productId:result.ProductId,
-                                          quantity:result.ProductQuantity-1
-                                      })
-                                  })
+                              // let update=await fetch("http://localhost:5500/product/update",{
+                              //         method:'POST',
+                              //         headers:{
+                              //             'Content-Type':'application/json'
+                              //         },
+                              //         body:JSON.stringify({
+                              //             productId:result.ProductId,
+                              //             quantity:result.ProductQuantity-1
+                              //         })
+                              //     })
                                   const addProd={
                             'ProductName':result.ProductName,
                             'ProductPrice':result.ProductPrice,
@@ -397,6 +398,18 @@
                             document.querySelector('.item-entry').appendChild(trow);
 
                               selectedProduct.push(addProd)
+
+                              let update=await fetch("http://localhost:5500/product/update-id",{
+                                      method:'POST',
+                                      headers:{
+                                          'Content-Type':'application/json'
+                                      },
+                                      body:JSON.stringify({
+                                          productId:result.ProductId,
+                                          quantity:result.ProductQuantity-ordQty
+                                      })
+                                  })
+                                  console.log(await update.json())
 
                               console.log(selectedProduct);
                               }else{
@@ -444,7 +457,7 @@
 
                               // sessionStorage.setItem('data',JSON.stringify(selectedProduct))
                               // console.log(result)
-                              let data=await fetch("/bill/create-bill",{
+                              let data=await fetch("http://localhost:5500/bill/create-bill",{
                               method:'POST',
                               headers:{
                                   'Content-Type':'application/json',
@@ -453,6 +466,9 @@
                              })
                              let res=await data.json();
                              console.log(res);
+
+                    
+
 
                               document.querySelector('#money').innerHTML = `<h2>Total Amount = ₹${sum}</h2>`
 

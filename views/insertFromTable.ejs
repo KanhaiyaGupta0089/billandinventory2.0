@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Inventory</title>
+    <!-- Google Font - Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-roboto bg-gray-100 p-5">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Heading -->
+        <h1 class="text-4xl font-semibold text-center text-gray-800 mb-8">Product Inventory</h1>
+
+        <!-- Add Product Button -->
+        <div class="text-center mb-6">
+            <button id="addNewRow" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700">Add New Product</button>
+        </div>
+
+        <!-- Product Table -->
+        <div class="overflow-x-auto bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-2xl font-medium text-gray-700 mb-4">Product List</h2>
+            <table class="min-w-full table-auto" id="productTable">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 text-left text-gray-700 font-semibold">ID</th>
+                        <th class="px-4 py-2 text-left text-gray-700 font-semibold">Name</th>
+                        <th class="px-4 py-2 text-left text-gray-700 font-semibold">Price</th>
+                        <th class="px-4 py-2 text-left text-gray-700 font-semibold">Quantity</th>
+                        <th class="px-4 py-2 text-left text-gray-700 font-semibold">Image</th>
+                        <th class="px-4 py-2 text-left text-gray-700 font-semibold">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <!-- Empty Rows will be added dynamically -->
+                    <tr class="empty-row">
+                        <td class="px-4 py-2 border" contenteditable="false"></td>
+                        <td class="px-4 py-2 border" contenteditable="true" id="name"></td>
+                        <td class="px-4 py-2 border" contenteditable="true" id="price"></td>
+                        <td class="px-4 py-2 border" contenteditable="true" id="quantity"></td>
+                        <td class="px-4 py-2 border">
+                            <input type="file" class="border p-2 rounded-md" accept="image/*" id="image">
+                        </td>
+                        <td class="px-4 py-2 border">
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 hidden save-button" onclick="saveProduct(this)">Save</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Notification Toast -->
+        <div id="notification" class="fixed top-5 right-5 bg-green-500 text-white p-4 rounded-lg shadow-md hidden">
+            <span id="notificationMessage"></span>
+        </div>
+    </div>
+
+    <!-- Script to handle form and table interactions -->
+    <script>
+        // Auto-generate Product ID
+        function generateProductID() {
+            return 'p-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+        }
+
+        // Show Notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notificationMessage');
+            notificationMessage.textContent = message;
+            notification.classList.remove('hidden');
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Add a new row when "Add New Product" button is clicked
+        document.getElementById('addNewRow').addEventListener('click', function() {
+            const productTableBody = document.getElementById('productTableBody');
+            const rows = productTableBody.getElementsByClassName('empty-row');
+
+            for (let row of rows) {
+                if (row.querySelector('td').textContent === '') {
+                    const productId = generateProductID();
+                    row.querySelector('td').textContent = productId;
+                    row.querySelector('.save-button').classList.remove('hidden');
+                    break;
+                }
+            }
+        });
+
+        // Allow double-clicking on any row to activate its product ID field
+        
+        // Function to save the product data
+        function saveProduct(button) {
+            const row = button.parentElement.parentElement;
+            const name = row.querySelector('#name').textContent;
+            const price = row.querySelector('#price').textContent;
+            const quantity = row.querySelector('#quantity').textContent;
+            const image = row.querySelector('#image').files[0];
+
+            if (!name || !price || !quantity || !image) {
+                alert('Please fill out all the fields!');
+                return;
+            }
+
+            // Handle image preview (optional)
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const imageURL = reader.result;
+
+                // After successful save, show the product details in the table
+                row.querySelector('#name').textContent = name;
+                row.querySelector('#price').textContent = price;
+                row.querySelector('#quantity').textContent = quantity;
+                row.querySelector('#image').outerHTML = `<img src="${imageURL}" class="w-16 h-16 object-cover rounded-md" />`;
+                
+                // Disable the input fields and save button
+                row.querySelectorAll('[contenteditable="true"]').forEach(cell => {
+                    cell.setAttribute('contenteditable', 'false');
+                });
+                button.setAttribute('disabled', 'true');
+                button.textContent = 'Saved';
+
+                // Show notification
+                showNotification('Product added successfully!');
+            };
+            reader.readAsDataURL(image);
+        }
+    </script>
+
+</body>
+</html>

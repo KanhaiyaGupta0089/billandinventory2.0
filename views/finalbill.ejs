@@ -147,9 +147,11 @@
          <button onclick="handleRedirect()" class="cart" style="background-color: green;">Cart</button>
          
         <div class="header" id="top">
-            <img src="/images/logo.png" alt="" class="logo">
+            
             <h1>Kanha Ltd.</h1>
-            <p><b>Invoice</b> #<%=billId%></p>
+            
+            <p><b>Invoices</b> #<%=billId%></p>
+            
             <p><b>Date: </b><%let date=new Date()%>
                 <%=date.toDateString()%></p>
         </div>
@@ -275,6 +277,7 @@ const amount='<%=billAmount%>'
 
      // Select the content to capture
      if(name&&email&&phone){
+
     const canvas=await html2canvas(content2)
   // Convert canvas to a data URL (base64 string)
   

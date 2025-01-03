@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Inline Styling -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .sidebar {
+            background-color: #2D3748;
+            min-height: 100vh;
+            width: 250px;
+            padding-top: 30px;
+            transition: 0.3s;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px;
+            color: #D1D5DB;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #4A5568;
+            color: white;
+        }
+
+        .sidebar a.active {
+            background-color: #38B2AC;
+            color: white;
+        }
+
+        /* Card styles */
+        .card {
+            background-color: #1A202C;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #1F2937;
+            padding: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar h1 {
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        /* Dark mode */
+        body.dark-mode {
+            background-color: #1A202C;
+            color: white;
+        }
+
+        .dark-mode .sidebar {
+            background-color: #2D3748;
+        }
+
+        .dark-mode .card {
+            background-color: #1A202C;
+            color: white;
+        }
+
+        .dark-mode .navbar {
+            background-color: #111827;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 dark-mode">
+
+    <div class="flex">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2 class="text-center text-white text-2xl font-semibold mb-8">Inventory Dashboard</h2>
+            <a href="#" class="text-white active">Dashboard</a>
+            <a href="#">Products</a>
+            <a href="#">Orders</a>
+            <a href="#">Analytics</a>
+            <a href="#">Settings</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+            <!-- Navbar -->
+            <div class="navbar flex justify-between items-center">
+                <h1 class="font-semibold">Welcome to your Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <!-- Dark Mode Toggle -->
+                    <button id="toggleDarkMode" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
+                        Toggle Dark Mode
+                    </button>
+                    <!-- Logout Button -->
+                    <button class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600">Logout</button>
+                </div>
+            </div>
+
+            <!-- Cards Section -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-6">
+                <!-- Card 1 -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold text-white">Total Products</h3>
+                    <p class="text-4xl font-bold text-teal-400">150</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold text-white">Total Sales</h3>
+                    <p class="text-4xl font-bold text-green-400">₹30,000</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold text-white">Low Stock Items</h3>
+                    <p class="text-4xl font-bold text-yellow-400">20</p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold text-white">Orders Today</h3>
+                    <p class="text-4xl font-bold text-red-400">50</p>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                <!-- Sales Chart -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold text-white mb-4">Sales Overview</h3>
+                    <canvas id="salesChart"></canvas>
+                </div>
+
+                <!-- Stock Levels Chart -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold text-white mb-4">Stock Levels</h3>
+                    <canvas id="stockChart"></canvas>
+                </div>
+            </div>
+
+            <!-- New Features Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                <!-- Recent Activities -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold text-white mb-4">Recent Activities</h3>
+                    <ul class="text-gray-300">
+                        <li>Product "Iron Door" added to inventory</li>
+                        <li>Order #1002 shipped</li>
+                        <li>Stock alert: "Wooden Door" at low stock</li>
+                        <li>Product "Roofing Sheet" price updated</li>
+                    </ul>
+                </div>
+
+                <!-- Inventory Alerts -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold text-white mb-4">Inventory Alerts</h3>
+                    <div class="bg-yellow-100 p-4 rounded-lg mb-4">
+                        <p class="text-yellow-600">Low stock on "Iron Windows". Only 10 items left!</p>
+                    </div>
+                    <div class="bg-red-100 p-4 rounded-lg mb-4">
+                        <p class="text-red-600">"Wooden Door" is out of stock. Please replenish.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Stats -->
+            <div class="card mt-8">
+                <h3 class="text-lg font-semibold text-white mb-4">Performance Stats</h3>
+                <div class="flex justify-between">
+                    <div class="text-center">
+                        <p class="text-sm text-gray-400">Orders Completed</p>
+                        <p class="text-2xl font-bold text-green-600">95%</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm text-gray-400">Stock Turnover</p>
+                        <p class="text-2xl font-bold text-blue-600">70%</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm text-gray-400">Customer Satisfaction</p>
+                        <p class="text-2xl font-bold text-yellow-600">85%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Charts -->
+    <script>
+        // Sales Chart
+        const salesChart = document.getElementById('salesChart').getContext('2d');
+        const mySalesChart = new Chart(salesChart, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Sales (₹)',
+                    data: [10000, 12000, 15000, 13000, 11000, 16000],
+                    backgroundColor: 'rgba(38, 198, 218, 0.5)',
+                    borderColor: 'rgba(38, 198, 218, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        enabled: true
+                    }
+                }
+            }
+        });
+
+        // Stock Levels Chart
+        const stockChart = document.getElementById('stockChart').getContext('2d');
+        const myStockChart = new Chart(stockChart, {
+            type: 'pie',
+            data: {
+                labels: ['Iron Doors', 'Wooden Doors', 'Roofing Sheets', 'Windows'],
+                datasets: [{
+                    data: [50, 30, 20, 15],
+                    backgroundColor: ['#48C9B0', '#F39C12', '#E74C3C', '#9B59B6'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+        // Dark Mode Toggle
+        const toggleButton = document.getElementById('toggleDarkMode');
+        toggleButton.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+    </script>
+</body>
+
+</html>

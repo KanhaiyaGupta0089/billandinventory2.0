@@ -25,6 +25,7 @@
         <h1 class="text-3xl font-semibold text-gray-800">Invoice</h1>
         <p class="text-sm text-gray-600">Bill No: <span class="font-bold">#<%=billId%></span></p>
       </div>
+      <img src="/images/paid.png" alt="paid" height="100px" width="100px" style="object-fit: contain;background-size: contain; z-index: 100;display: none;" class="paid-img">
       <div class="text-right">
         <p class="text-lg font-semibold text-gray-800">Kanha Ltd.</p>
         <p class="text-sm text-gray-600">Greater Noida, Up</p>
@@ -36,7 +37,7 @@
     <!-- Customer Information -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
       <div>
-        <p class="text-lg font-semibold text-gray-800">Bill To:</p>
+        <p class="text-lg font-semibold text-gray-800">BillTo:</p>
         <p class="name text-sm text-gray-600"><b>Customer Name </b><input type="text" class="customer" id="cname" value="kg" required onblur="handleBlur(event,this.value)"></p>
         <p class="email text-sm text-gray-600"><b>Email: </b><input type="email" name="email" id="cmail" value="gpranshu945@gmail.com" required onblur="handleBlur(event,this.value)"></p>
         <p class="phone text-sm text-gray-600"><b>Mob.No: </b><input type="number" name="phoneNo" id="cnumber" value="8810846607" required onblur="handleBlur(event,this.value)"></p>
@@ -145,6 +146,7 @@ let pollInterval;
    document.addEventListener('DOMContentLoaded',async ()=>{
     let paid=false
     const amount2='<%=billAmount%>'
+    console.log(amount2)
     let cuname=document.querySelector('#cname').value;
         
         
@@ -205,6 +207,7 @@ let pollInterval;
  btn[1].style.display="none"
  btn[2].style.display="none"
  
+document.querySelector('.paid-img').style.display='block'
 const canvas=await html2canvas(content)
  // Convert canvas to a data URL (base64 string)
  const screenshot = canvas.toDataURL('image/png');
@@ -226,7 +229,7 @@ const canvas=await html2canvas(content)
         }
         // console.log(dayObj)
         let billObj={
-            billAmount:amount,
+            billAmount:Number(amount)+Number(((amount*10)/100)),
             data,
             billId
         }

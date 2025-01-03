@@ -3,7 +3,7 @@ const express=require('express');
 
 
 const router=express.Router();
-const {showUdhar,renderDayBook,getEmpDetail,renderEmpList,addEmployee,getAllDayData,saveDayBook,deleteUdhar,renderReport,updateUdhar,showAllUdhar,handleUdhar,renderUdharKhatas}=require('../controllers/userController')
+const {showUdhar,renderDayBook,getEmpDetail,renderInventoryDashboard,renderEmpList,addEmployee,getAllDayData,saveDayBook,deleteUdhar,renderReport,updateUdhar,showAllUdhar,handleUdhar,renderUdharKhatas,getSaleReport}=require('../controllers/userController')
 
 router.get('/udhar',showUdhar)
 router.post('/day-book',saveDayBook)
@@ -18,6 +18,9 @@ router.get('/day-data',getAllDayData)
 router.get('/emp-list',renderEmpList)
 router.post('/add-emp',addEmployee)
 router.get('/emp-detail',getEmpDetail)
+router.get('/inventory-dash',renderInventoryDashboard)
+router.get('/sale-report/:type',getSaleReport)
+
 
 module.exports=router;
 

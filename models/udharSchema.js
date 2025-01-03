@@ -40,7 +40,8 @@ const udharSchema=new Schema({
     Products:[{
         ProductId:{
             type:String,
-            required:true
+            required:true,
+            unique:true
         },
         ProductName:{
             type:String,

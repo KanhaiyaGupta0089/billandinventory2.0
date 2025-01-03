@@ -20,7 +20,7 @@
 
     <!-- Sidebar -->
     <aside class="bg-gray-800 text-white w-64 p-6">
-      <h1 class="text-2xl font-bold mb-6">Shop Name</h1>
+      <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
       <nav>
         <ul>
           <li class="mb-4">
@@ -40,11 +40,11 @@
             </a>
           </li>
           <li class="mb-4">
-            <a href="/product/entry" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+            <a href="/" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
               </svg>
-              Inventory
+              Add Product
             </a>
           </li>
           <li class="mb-4">
@@ -60,7 +60,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
               </svg>
-              Return Product
+              Inventory
             </a>
           </li>
           <li class="mb-4">
@@ -80,7 +80,7 @@
             </a>
           </li>
           <li class="mb-4">
-            <a href="#" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+            <a href="/bill/display-bills" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
               </svg>
@@ -88,27 +88,27 @@
             </a>
           </li>
           <li class="mb-4">
-            <a href="#" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+            <a href="/user/emp-list" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
               </svg>
-              Purchase Orders
+              Employee List
             </a>
           </li>
           <li class="mb-4">
-            <a href="#" class="flex items-center gap-2 p-2 rounded bg-gray-500">
+            <a href="/product/return" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
+              </svg>
+              return Product
+            </a>
+          </li>
+          <li class="mb-4">
+            <a href="/user/day-book" class="flex items-center gap-2 p-2 rounded bg-gray-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
               </svg>
               Day Book
-            </a>
-          </li>
-          <li class="mb-4">
-            <a href="#" class="flex items-center gap-2 p-2 rounded hover:bg-blue-800">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a1 1 0 011.71.708v10.876a1 1 0 01-1.71.708l-6.342-5.438a1 1 0 010-1.416l6.342-5.438z" />
-              </svg>
-              Integrations
             </a>
           </li>
           <li class="mb-4">
@@ -164,6 +164,7 @@ window.addEventListener('load', async () => {
   let tbody =document.getElementById("salesTableBody");
         let alldata = await fetch("http://localhost:5500/user/day-data");
         let todayData = await alldata.json();
+        console.log(todayData)
         // if(!todayData){
         //    tbody.innerHTML="No Product Billed"
         // }
@@ -175,7 +176,7 @@ window.addEventListener('load', async () => {
         todayData.map((item) => {
           let tamount=0
         
-            tamount=tamount+Number(item.Amount.split('Rs')[0])
+            tamount=tamount+Number(item.Amount)
             selledAmount=selledAmount+tamount
 
             console.log(new Date(item.Date).toDateString())

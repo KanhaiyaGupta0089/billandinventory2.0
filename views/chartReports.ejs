@@ -39,8 +39,18 @@
 
   <script>
     // Wait for the DOM to load
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async() => {
+      let reports=await fetch("http://localhost:5500/user/sale-report/:weekly")
+      let response=await reports.json()
+      console.log(response)
+      let day=[]
       // Weekly Sales Chart
+      response.map((item)=>{
+        day.push(item.totalSales)
+        
+      })
+      console.log(day);
+      
       const weeklySalesCtx = document.getElementById('weeklySalesChart').getContext('2d');
       new Chart(weeklySalesCtx, {
         type: 'bar',
@@ -48,7 +58,7 @@
           labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
           datasets: [{
             label: 'Sales ($)',
-            data: [120, 150, 180, 220, 170, 250, 300],
+            data: day,
             backgroundColor: 'rgba(54, 162, 235, 0.5)',
             borderColor: 'rgba(54, 162, 235, 1)',
             borderWidth: 1
@@ -116,6 +126,8 @@
           responsive: true
         }
       });
+
+      
     });
   </script>
 </body>

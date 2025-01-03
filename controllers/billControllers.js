@@ -98,12 +98,11 @@ const getBillImage = async (req, res) => {
 };
 const printBill = async (req, res) => {
   
-
   let data = await billModel.find();
-  console.log(data);
+  //console.log(data);
   let res2=await fetch("http://localhost:5500/bill/billdelete")
   let ans=await res2.json();
-  console.log(ans);
+  //console.log(ans);
   
 
   if (data.length > 0) {
@@ -117,7 +116,7 @@ const printBill = async (req, res) => {
     let billId = "B0";
 
     billId = billId.slice(0, 1) + Number(save.length+1);
-    console.log(billId);
+    //console.log(billId);
 
     // let ans = await saveBillModel.create({
     //   BillId: billId,
@@ -128,9 +127,9 @@ const printBill = async (req, res) => {
     //   })),
     //   BillAmount: billAmount,
     // });
-    // console.log(ans);
+    // //console.log(ans);
 
-    res.render("finalbillCopy copy", {
+    res.render("finalBillCopy copy", {
       data,
       billId,
       billAmount,

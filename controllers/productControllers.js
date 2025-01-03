@@ -1,5 +1,5 @@
 const upload = require("../multer");
-const { MongoQueryFilter } = require('mongo-query-filter');
+
 const productModel = require("../models/ProductSchema");
 const billModel = require("../models/billSchema");
 const saveBillModel=require('../models/saveBillSchema')
@@ -7,6 +7,20 @@ var QRCode = require("qrcode");
 const http = require("http");
 const {client}=require('../reddis')
 const { Parser } = require('json2csv');
+const xlsx = require('xlsx');
+const csvParser = require('csv-parser');
+const fs=require('fs')
+
+const NodeCache = require("node-cache");
+const myCache = new NodeCache();
+
+
+
+
+
+
+
+
 const createProduct = async (req, res) => {
   console.log(req.body)
   
@@ -76,7 +90,8 @@ console.log(ProductImage)
 
 // console.log(`Updated inventory:`, products);
   // res.redirect("/");
-  res.redirect("/product/entry")
+  // res.redirect("/product/entry")
+  res.redirect("/")
 };
  
 function darkenRGB(color, amount) {
@@ -87,10 +102,12 @@ function darkenRGB(color, amount) {
 const showProducts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
 
-  const limit = 10;
+  const limit = 15;
   const skip = (page - 1) * limit;
   let search = { ProductName: "bat", ProductPrice: 300 }; 
-  let ans = await productModel.find({}).skip(skip).limit(limit);
+  let ans2 = await productModel.find({}); 
+  let ans = ans2.slice(skip,skip+limit);
+  
 
   
     
@@ -120,6 +137,7 @@ const showProducts = async (req, res) => {
     limit,
     currPage:page,
     categoriesWithColors,
+    ans2
     
   });
 };
@@ -311,11 +329,11 @@ const returnProduct=async (req,res)=>{
   let {billId,returnProducts}=req.body;
   let returnAmt=0
   
-  console.log(req.body)
+  console.log(billId)
   let i=0;
   try{
     const bill=await saveBillModel.findOne({BillId:billId})
-    console.log(bill)
+    console.log("bill is",bill)
     if (!bill) {
       return res.status(404).json({ message: 'No matching bill or products found!' });
     }
@@ -359,15 +377,39 @@ const returnProduct=async (req,res)=>{
 }
 
 const getAllCategory=async (req,res)=>{
-  let category=await productModel.distinct('ProductCategory') 
-  console.log(category)
+  let sendCateg;
 
-  let sendCateg=category.map((elem)=>({
-        name:elem,
-        color:getRandomLightColor()
-  }))
+//   if(myCache.has("categories")){
+//     sendCateg=JSON.parse(myCache.get("categories"))
+//   }else{
+//   let category=await productModel.distinct('ProductCategory') 
+//   console.log(category)
+
+//   let sendCateg=category.map((elem)=>({
+//         name:elem,
+//         color:getRandomLightColor()
+//   }))
+
+//   myCache.set("categories",JSON.stringify(sendCateg))
+// }
   
-  res.json(sendCateg)
+//   res.json(sendCateg)
+let ans=await productModel.find({})
+let categ=new Set();
+ans.map(category => (
+  categ.add(category.ProductCategory)
+    
+  ));
+  console.log(categ)
+  categ=Array.from(categ)
+  sendCateg=categ.map((item)=>(
+    {
+      name:item,
+      color:getRandomLightColor()
+    }
+  ))
+  // console.log(categ)
+res.json(sendCateg)
 
 
   
@@ -382,12 +424,14 @@ const filterProduct=async(req,res)=>{
   inFilter=JSON.parse(inFilter)
   outFilter=JSON.parse(outFilter)
   let prodQty=""
-  if(inFilter){
-    prodQty={$gt:0}
+  if(inFilter&&outFilter){
+    prodQty={$gte:0}
   }
   else if(!outFilter&&!inFilter){
     prodQty={$gte:0}
   }
+  else if(inFilter)
+    prodQty={$gt:0}
   else{
   prodQty=0
   }
@@ -413,8 +457,114 @@ const filterProduct=async(req,res)=>{
 
 
 
+const getAllProduct=async(req,res)=>{
+  let data;
+  
+  if(myCache.has("products")){
+    data=JSON.parse(myCache.get("products"))
+  }else{
+    data=await productModel.find({})
+    myCache.set("products",JSON.stringify(data))
+  }
+  res.json(data)
+  
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+    
+}
+
+const updateById=async(req,res)=>{
+  try{
+  let {productId,quantity}=req.body;
+  console.log(req.body)   
+    
+let update=await productModel.updateOne({ProductId:productId},{ProductQuantity:quantity},{new:true})
+console.log(update)
+// let update=await productModel.updateOne({ProductId:productId},{ProductQuantity:quantity},{new:true})
+// let prod=await productModel.findById({ProductId:productId})
+// console.log(prod)
+res.json(update)
+  // if(!update)
+    // return res.send("error can not update product")
+  // res.status(200).json(update)
+
+}catch(err){
+  console.error(err);
+  res.status(500).json({error:err})
+}
+
+  
+}
+const showInputFromFile=(req,res)=>{
+  res.render('fileInsert')
+}
 
 
+const InputFromFile=(req,res)=>{
+  const fileExtension = req.file.originalname.split('.').pop();
+
+  if (fileExtension === 'csv') {
+    return bulkInsertProductsFromCSV(req, res);
+} else if (fileExtension === 'xlsx') {
+    return bulkInsertProductsFromExcel(req, res);
+} else {
+    return res.status(400).send({ message: 'Invalid file type. Please upload CSV or Excel file.' });
+}
+  console.log(req.file.path)
+}
+
+bulkInsertProductsFromCSV = async (req, res) => {
+  try {
+      const filePath = req.file.path;
+      const products = [];
+
+      // Parse CSV file
+      fs.createReadStream(filePath)
+          .pipe(csvParser())
+          .on('data', (row) => {
+              products.push(row);
+          })
+          .on('end', async () => {
+              // Insert into database
+              const insertedProducts = await productModel.insertMany(products);
+              fs.unlinkSync(req.file.path);
+              res.status(200).send({ message: 'Bulk data inserted successfully!', data: insertedProducts });
+          });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: 'Error processing CSV file.', error });
+  }
+};
+bulkInsertProductsFromExcel = async (req, res) => {
+  try {
+      const filePath = req.file.path;
+
+      // Parse Excel file
+      const workbook = xlsx.readFile(filePath);
+      const sheetName = workbook.SheetNames[0];
+      const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+      // Insert into database
+      const insertedProducts = await productModel.insertMany(sheetData);
+      fs.unlinkSync(req.file.path);
+      res.status(200).send({ message: 'Bulk data inserted successfully!', data: insertedProducts });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: 'Error processing Excel file.', error });
+  }
+};
+
+const showTableInsertion=(req,res)=>{
+  res.render('insertFromTable')
+}
 
 
 
@@ -436,6 +586,12 @@ module.exports = {
   returnProduct,
   getAllCategory,
   filterProduct,
-  updateProduct2
+  updateProduct2,
+  getAllProduct,
+  updateById,
+  InputFromFile,
+  showInputFromFile,
+  showTableInsertion
+  
   
 };

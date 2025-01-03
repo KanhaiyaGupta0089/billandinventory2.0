@@ -198,6 +198,8 @@ let returnObj={
         body:JSON.stringify(returnObj)
       })
       let respReturn=await productReturn.json()
+      console.log(respReturn);
+      
       alert(respReturn.message)
       
 

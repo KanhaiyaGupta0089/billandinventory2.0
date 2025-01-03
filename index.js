@@ -11,8 +11,11 @@ const session = require('express-session');
 const axios = require('axios');
 const userRoutes=require('./routes/userRoutes')
 const productModel=require('./models/ProductSchema')
+
+const { v4: uuidv4 } = require('uuid');
 const cors=require('cors')
 const authRoutes=require('./routes/authRoutes')
+
 require('dotenv').config()
 
 
@@ -57,8 +60,11 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 
 mongoose.connect('mongodb+srv://gkanha1500:5Yx1nuMxs5Oqg19R@cluster0.s1yoo.mongodb.net/formSubmit').then(async() => {
+   // mongoose.connect('mongodb://127.0.0.1:27017/formsubmit').then(async() => {
+   
      
    console.log('MongoDB connected user')
+   
    try {
      
        await createAdmin(); // Ensure admin is created once during startup
@@ -88,7 +94,8 @@ app.get('/', async (req, res) => {
    // fid="p00";
 
    
-   fid='p0'+record
+   // fid='p0'+record
+   let fid=`p-${uuidv4().replace(/-/g, '').substring(0, 4)}`
    
 
    
