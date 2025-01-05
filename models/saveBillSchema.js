@@ -47,7 +47,7 @@ MobileNumber:{
         ProductId:{
             type:String,
             required:true,
-            unique:true
+            
         },
         ProductName:{
             type:String,
