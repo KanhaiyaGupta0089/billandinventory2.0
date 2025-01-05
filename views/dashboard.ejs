@@ -248,18 +248,18 @@
       let psell=document.querySelector('.pselled')
       let topselling=document.querySelectorAll('.topselling')
       //Fetching all udhar khata for its length
-      let data=await fetch("http://localhost:5500/user/all-udhar")
+      let data=await fetch("https://billandinventory2-0.onrender.com/user/all-udhar")
       let resp=await data.json()
       console.log(resp)
       udhar.textContent=resp.length
       //counting all product in the inventory
-      let count=await fetch("http://localhost:5500/product/count-product")
+      let count=await fetch("https://billandinventory2-0.onrender.com/product/count-product")
       let countResp=await count.json()
       console.log(countResp)
       proCount.textContent=countResp.count;
       
       
-      let bill=await fetch("http://localhost:5500/bill/bill-count") 
+      let bill=await fetch("https://billandinventory2-0.onrender.com/bill/bill-count") 
       let billCount=await bill.json()
       // console.log(billCount)
       invoice.textContent=billCount.billCount
@@ -282,7 +282,7 @@
           let pid=proArray[i].productId
           console.log(pid);
           
-        let data=await fetch(`http://localhost:5500/product/search/${pid}`)
+        let data=await fetch(`https://billandinventory2-0.onrender.com/product/search/${pid}`)
         pdata=await data.json()
         if(pdata!=null){
         ct++;
@@ -295,7 +295,7 @@
         
         // if(!pdata){
         //   let pid2=proArray[i+1].productId
-        //   let data=await fetch(`http://localhost:5500/product/search/${pid2}`)
+        //   let data=await fetch(`https://billandinventory2-0.onrender.com/product/search/${pid2}`)
         // pdata=await data.json()
           
         // }
@@ -321,7 +321,7 @@
        let tprod=document.querySelector('.totalProd')
        let tinvo=document.querySelector('.bills')
        
-      let dayData=await fetch("http://localhost:5500/user/day-data")
+      let dayData=await fetch("https://billandinventory2-0.onrender.com/user/day-data")
       let dayBook=await dayData.json()
       console.log(dayBook)
       let tamount=0
