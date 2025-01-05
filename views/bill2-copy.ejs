@@ -146,7 +146,7 @@
                         }
                       try {
                           // Fetch product data
-                          let res = await fetch(`/product/search/${decodedText}`);
+                          let res = await fetch(`https://billandinventory2-0.onrender.com/product/search/${decodedText}`);
                           let data2 = await res.json();
                           console.log(data2);
                           let data=[data2]
@@ -216,7 +216,7 @@
 
                           // Send data to the backend to create a bill
                           console.log(addProd)
-                          let fetchedData = await fetch("/bill/create-bill", {
+                          let fetchedData = await fetch("https://billandinventory2-0.onrender.com/bill/create-bill", {
                               method: 'POST',
                               headers: {
                                   'Content-Type': 'application/json',
@@ -286,7 +286,7 @@
 
 
 
-           let res = await fetch(`/product/search?q=${encodeURIComponent(searchTerm)}`);
+           let res = await fetch(`https://billandinventory2-0.onrender.com/product/search?q=${encodeURIComponent(searchTerm)}`);
            let data = await res.json();  
                   // console.log("cached array",data)
                   // console.log(typeof (data));
