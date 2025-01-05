@@ -212,7 +212,7 @@
   <script>
 
 window.addEventListener('load', async () => {
-        let udhar = await fetch("http://localhost:5500/user/all-udhar");
+        let udhar = await fetch("https://billandinventory2-0.onrender.com/user/all-udhar");
         let uresp = await udhar.json();
         let tbody = document.querySelector('tbody');
         let count = 0;
@@ -263,7 +263,7 @@ window.addEventListener('load', async () => {
                     
                     // Change button back to 'Edit'
                     this.innerText = 'Edit';
-                    let updatedUdhar=await fetch("http://localhost:5500/user/update-khata",{
+                    let updatedUdhar=await fetch("https://billandinventory2-0.onrender.com/user/update-khata",{
                       method:'POST',
                       headers:{
                         'Content-Type':'application/json'
@@ -288,7 +288,7 @@ window.addEventListener('load', async () => {
                 console.log(cells)
                 let customerName=cells[1].textContent
                 console.log(cells[1].textContent)
-                let udharDelete=await fetch(`http://localhost:5500/user/delete-khata/`,{
+                let udharDelete=await fetch(`https://billandinventory2-0.onrender.com/user/delete-khata/`,{
                   method:'DELETE',
                   headers:{
                     'Content-type':'application/json'
