@@ -201,7 +201,7 @@
                     console.log(selectedProduct);
                     console.log(typeof (selectedProduct))
                     item.onclick = async function () {
-                        let update=await fetch("http://localhost:5500/product/update",{
+                        let update=await fetch("https://billandinventory2-0.onrender.com/product/update",{
                                 method:'POST',
                                 headers:{
                                     'Content-Type':'application/json'
