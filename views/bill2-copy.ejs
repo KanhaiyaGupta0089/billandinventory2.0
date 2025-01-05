@@ -357,7 +357,7 @@
                           console.log(typeof (selectedProduct))
                           let ordQty=1
                           item.onclick = async function () {
-                              // let update=await fetch("http://localhost:5500/product/update",{
+                              // let update=await fetch("https://billandinventory2-0.onrender.com/product/update",{
                               //         method:'POST',
                               //         headers:{
                               //             'Content-Type':'application/json'
@@ -399,7 +399,7 @@
 
                               selectedProduct.push(addProd)
 
-                              let update=await fetch("http://localhost:5500/product/update-id",{
+                              let update=await fetch("https://billandinventory2-0.onrender.com/product/update-id",{
                                       method:'POST',
                                       headers:{
                                           'Content-Type':'application/json'
@@ -457,7 +457,7 @@
 
                               // sessionStorage.setItem('data',JSON.stringify(selectedProduct))
                               // console.log(result)
-                              let data=await fetch("http://localhost:5500/bill/create-bill",{
+                              let data=await fetch("https://billandinventory2-0.onrender.com/bill/create-bill",{
                               method:'POST',
                               headers:{
                                   'Content-Type':'application/json',
