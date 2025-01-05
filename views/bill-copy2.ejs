@@ -447,9 +447,11 @@ async function handleOnInput() {
       document.getElementById('productSidebar').classList.add('open');
       document.getElementById('modalTitle').innerText = 'Add Product';
       console.log(ans.length)
+      const uniqueId = uuid.v4();
+      let ppid=`p-${uniqueId.replace(/-/g, '').substring(0, 4)}`
+      document.getElementById('productId').value=ppid;
       
-      document.getElementById('productId').value=productId;
-      document.getElementById('productForm').reset();
+      
     });
 
     // Function to open the modal for editing a product
