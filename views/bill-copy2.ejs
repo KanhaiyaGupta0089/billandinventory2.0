@@ -338,7 +338,7 @@ doc.autoTable({
     };
     
   function navigateDashboard(){
-    window.location.href='http://localhost:5500/dashboard'
+    window.location.href='https://billandinventory2-0.onrender.com/dashboard'
   }  
 
 
@@ -372,7 +372,7 @@ async function handleOnInput() {
             console.log(inp.value)
             
             if(inp.value!=""){
-            // let search = await fetch(`http://localhost:5500/product/search?q=${encodeURIComponent(inp.value)}`);
+            // let search = await fetch(`https://billandinventory2-0.onrender.com/product/search?q=${encodeURIComponent(inp.value)}`);
             let prod=await ans2.filter((item)=>{
               return item.ProductName.toLowerCase().startsWith(inp.value.toLowerCase())
             })
@@ -384,7 +384,7 @@ async function handleOnInput() {
             // let prod = await search.json();
             tbody.innerHTML = "";
  
-            let category=await fetch("http://localhost:5500/product/all-category")
+            let category=await fetch("https://billandinventory2-0.onrender.com/product/all-category")
             let resp=await category.json()
             console.log("res",resp)
             // respArray=resp
