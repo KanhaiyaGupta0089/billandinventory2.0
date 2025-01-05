@@ -457,7 +457,7 @@ async function handleOnInput() {
       document.getElementById('productSidebar').classList.add('open');
       document.getElementById('modalTitle').innerText = 'Edit Product';
       // Prefill form with product details (you need to fetch the product details)
-      let product=await fetch(`http://localhost:5500/product/search/${productId}`)
+      let product=await fetch(`https://billandinventory2-0.onrender.com/product/search/${productId}`)
       let result=await product.json()
       document.getElementById('productId').value=productId;
       document.getElementById('productName').value = result.ProductName; // Replace with dynamic data
@@ -570,7 +570,7 @@ async function handleOnInput() {
       console.log("Filters Cleared");
     }
     document.addEventListener('DOMContentLoaded',async ()=>{
-       let category=await fetch("http://localhost:5500/product/all-category")
+       let category=await fetch("https://billandinventory2-0.onrender.com/product/all-category")
        let resp=await category.json()
       //  console.log(resp)
        
@@ -635,7 +635,7 @@ async function handleOnInput() {
          "page":pageNo
         }
    
-    let resp=await fetch(`http://localhost:5500/product/filter/${JSON.stringify(obj)}`)
+    let resp=await fetch(`https://billandinventory2-0.onrender.com/product/filter/${JSON.stringify(obj)}`)
     
 
     let data=await resp.json()
@@ -780,7 +780,7 @@ form.action='/product/update2'
   
   
 
-  // let addProd=await fetch("http://localhost:5500/product/create",{
+  // let addProd=await fetch("https://billandinventory2-0.onrender.com/product/create",{
   //   method:'POST',
   //   headers:{
   //     'Content-Type':'application/json'
@@ -800,7 +800,7 @@ async function handleDelete(productId,trow){
   p2.removeChild(p1);
    console.log(p2);
   
-  let delProd=await fetch(`http://localhost:5500/product/delete2/${productId}`)
+  let delProd=await fetch(`https://billandinventory2-0.onrender.com/product/delete2/${productId}`)
   let resp=await delProd.json();
 
 
