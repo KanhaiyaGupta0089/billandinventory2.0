@@ -233,7 +233,7 @@ async function handleSort(field,order){
          "page":pageNo
         }
    
-    let resp=await fetch(`http://localhost:5500/product/filter/${JSON.stringify(obj)}`)
+    let resp=await fetch(`https://billandinventory2-0.onrender.com/product/filter/${JSON.stringify(obj)}`)
     let data=await resp.json()
     console.log(data)
 
@@ -270,7 +270,7 @@ document.querySelector('button').addEventListener('click', () => {
         });
         async function handleOnInput() {
             let inp = document.querySelector('#productName');
-            let search = await fetch(`http://localhost:5500/product/search?q=${encodeURIComponent(inp.value)}`);
+            let search = await fetch(`https://billandinventory2-0.onrender.com/product/search?q=${encodeURIComponent(inp.value)}`);
             let tbody = document.querySelector('#product-body');
             let ans = await search.json();
             tbody.innerHTML = "";
