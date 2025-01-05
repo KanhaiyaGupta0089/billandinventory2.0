@@ -162,7 +162,7 @@
 
 window.addEventListener('load', async () => {
   let tbody =document.getElementById("salesTableBody");
-        let alldata = await fetch("http://localhost:5500/user/day-data");
+        let alldata = await fetch("https://billandinventory2-0.onrender.com/user/day-data");
         let todayData = await alldata.json();
         console.log(todayData)
         // if(!todayData){
