@@ -40,7 +40,7 @@
   <script>
     // Wait for the DOM to load
     document.addEventListener("DOMContentLoaded", async() => {
-      let reports=await fetch("http://localhost:5500/user/sale-report/:weekly")
+      let reports=await fetch("https://billandinventory2-0.onrender.com/user/sale-report/:weekly")
       let response=await reports.json()
       console.log(response)
       let day=[]
