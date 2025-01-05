@@ -14,7 +14,7 @@ const productSchema=new Schema({
     ProductId:{
         type:String,
         required:true,
-        unique:true
+        
     },
     ProductName:{
         type:String,
