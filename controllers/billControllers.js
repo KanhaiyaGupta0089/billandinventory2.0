@@ -100,7 +100,7 @@ const printBill = async (req, res) => {
   
   let data = await billModel.find();
   //console.log(data);
-  let res2=await fetch("http://localhost:5500/bill/billdelete")
+  let res2=await fetch("https://billandinventory2-0.onrender.com/bill/billdelete")
   let ans=await res2.json();
   //console.log(ans);
   
