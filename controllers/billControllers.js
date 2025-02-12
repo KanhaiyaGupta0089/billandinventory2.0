@@ -34,6 +34,52 @@ app.use(
   })
 );
 
+cron.schedule('21 14 * * *', async() => {
+
+  mailSendKaro()
+  });
+
+const mailSendKaro=()=>{
+  let date = new Date(); 
+  let cname='kanha'
+    let phone=8810846607
+    let cmail="gpranshu945@gmail.com"
+
+    let transporter = nodemailer.createTransport({
+      service: "gmail", // Use 'gmail', 'outlook', or specify an SMTP server
+      auth: {
+        user: "gkanha1500@gmail.com", // Your email address
+        pass: "xrya qogi ajxg ilth", // Your email password or app password
+      },
+    });
+   
+    let mailOptions = {
+      from: "gkanha1500@gmail.com", // Sender's email address
+      to: cmail, // Recipient's email address
+      subject: "Your previous day sales and profit", // Subject line
+      // text: 'Hello, this is a test email sent from Node.js using Nodemailer.' // Plain text body
+      // Optionally, you can use 'html' for HTML content:
+      html: `
+               <h1>Hello, ${cname}!</h1>
+  <h3>This is the previous day sales and profit report</h3>
+          `
+      
+    };
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error("Error occurred:", err);
+       return "error"
+      } else {
+        console.log("Email sent successfully:", info.response);
+        return "mail send succesfully"
+      }
+    });
+  
+}
+
+
+
+
 const getBill = async (req, res) => {
   let items = await productModel.find({});
 
