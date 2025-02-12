@@ -35,7 +35,7 @@ app.use(
   })
 );
 
-cron.schedule('21 14 * * *', async() => {
+cron.schedule('41 14 * * *', async() => {
 
   mailSendKaro()
   });
