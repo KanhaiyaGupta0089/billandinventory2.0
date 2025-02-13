@@ -18,7 +18,7 @@ const saveBillSchema=new Schema({
     BillId:{
         type:String,  
         required:true,
-        unique:true
+        
     },
     CustomerName:{
         type:String,
