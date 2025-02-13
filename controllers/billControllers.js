@@ -257,6 +257,7 @@ const sendEmail = async (req, res) => {
     attachments: [
       {
         path: outputPdfPath,
+        content: fs.createReadStream(outputPdfPath),
       },
     ],
   };
